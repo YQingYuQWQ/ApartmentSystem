@@ -1,8 +1,11 @@
 package com.apartmentsystem.util;
 
+import org.springframework.stereotype.Component;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+@Component
 public class PasswordUtil {
     private static final String SALT = "baoyuan";
 
@@ -30,6 +33,10 @@ public class PasswordUtil {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("加密算法异常", e);
         }
+    }
+
+    public boolean matches(String password, String password1) {
+        return encryptPassword(password).equals(password1);
     }
 }
 

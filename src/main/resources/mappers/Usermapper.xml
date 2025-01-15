@@ -5,11 +5,20 @@
     <insert id="insertUser">
         INSERT INTO users (username, password, email, phone, role, created_at, updated_at) VALUES (#{username}, #{password}, #{email}, #{phone}, #{role}, NOW(), NOW())
     </insert>
+
     <update id="updateUserPasswordById">
         update users set password = #{password} where id = #{id}
     </update>
 
     <select id="getUserByUserName" resultType="com.apartmentsystem.entity.User">
         SELECT * FROM users WHERE username = #{username}
+    </select>
+
+    <select id="getUserByEmail" resultType="com.apartmentsystem.entity.User">
+        SELECT * FROM users WHERE email = #{email}
+    </select>
+
+    <select id="getUserByPhone" resultType="com.apartmentsystem.entity.User">
+        SELECT * FROM users WHERE phone = #{phone}
     </select>
 </mapper>

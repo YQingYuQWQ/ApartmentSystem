@@ -7,7 +7,7 @@ import javax.validation.constraints.Pattern;
 
 public interface UserService {
     User getUserByUserName(String userName);
-    Result insertUser(@Pattern(regexp = "^[a-zA-Z0-9]{5,16}$") String username, @Pattern(regexp = "^[a-zA-Z0-9]{5,16}$") String password);
-    Result login(@Pattern(regexp = "^[a-zA-Z0-9]{5,16}$")String username, @Pattern(regexp = "^[a-zA-Z0-9]{5,16}$") String password);
+    Result insertUser(String username, String password, String email, String phone, int role);
+    Result login(String username, String password, int role);
     Result updatePassword(String oldPassword, String newPassword, String rePassword, String token);
 }
