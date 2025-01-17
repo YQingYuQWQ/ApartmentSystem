@@ -23,10 +23,8 @@ public class UserController {
                            @RequestParam String password,
                            @RequestParam String email,
                            @RequestParam String phone,
-                           @RequestParam int role,
-                           HttpServletRequest request) {
-        if(RequestUtil.getUserIdFromRequest(request) != null)
-            logServiceImpl.insertLog(RequestUtil.getUserIdFromRequest(request), "新增用户:" + username);
+                           @RequestParam int role
+                           ) {
         return userServiceImpl.insertUser(username, password, email, phone, role);
     }
 

@@ -1,7 +1,10 @@
 package com.apartmentsystem.interceptor;
 
 
+import com.apartmentsystem.entity.User;
+import com.apartmentsystem.mapper.UserMapper;
 import com.apartmentsystem.util.JWTutil;
+import com.apartmentsystem.util.UserHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -15,6 +18,8 @@ import java.util.Map;
 public class UserInterceptor implements HandlerInterceptor {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -34,8 +39,11 @@ public class UserInterceptor implements HandlerInterceptor {
             response.setStatus(401);
             return false;
         }
-        //解析token
-        Map<String, Object> map = JWTutil.verifyToken(token);
+
+        User user = userMapper.getUserByUserName(JWTutil.verifyToken(token).get("username").toString());
+        if(user == null)
+            return true;
+        UserHolder.saveUser(user);
         return true;
     }
 }

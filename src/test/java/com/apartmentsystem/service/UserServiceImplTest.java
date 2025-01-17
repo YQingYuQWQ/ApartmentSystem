@@ -12,6 +12,5 @@ public class UserServiceImplTest {
 
     @Test
     public void testInsertUser() {
-        System.out.println(userServiceImpl.insertUser("test", "123456", "2802274853@qq.com", "18242671272", 0));;
     }
 }
