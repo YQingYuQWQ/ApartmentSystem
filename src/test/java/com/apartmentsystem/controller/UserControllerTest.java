@@ -11,7 +11,6 @@ public class UserControllerTest {
 
     @Test
     public void testRegister() {
-        System.out.println(userController.register("test1", "123456", "28022748533@qq.com", "18242671273", 0));
     }
 
     @Test

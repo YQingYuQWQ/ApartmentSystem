@@ -15,6 +15,7 @@ import java.util.Map;
 public class UserInterceptor implements HandlerInterceptor {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if("OPTIONS".equals(request.getMethod().toUpperCase())) {
