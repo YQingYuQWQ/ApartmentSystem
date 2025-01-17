@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apartmentsystem.mapper.HouseMapper">
+
+    <insert id="insertHouse">
+        INSERT INTO house (house_number, building_name, floor, owner_id, status, created_at, updated_at) VALUES
+        (#{house_number}, #{building_name}, #{floor}, #{owner_id}, #{status}, NOW(), NOW())
+    </insert>
+    <update id="updateOwnerByHouseNumber">
+        UPDATE house SET owner_id = #{owner_id}, updated_at = NOW() WHERE house_number = #{house_number}
+    </update>
+    <update id="updateStatusByHouseNumber">
+        UPDATE house SET status = #{status}, updated_at = NOW() WHERE house_number = #{house_number}
+    </update>
+    <delete id="deleteHouseByHouseNumber">
+        DELETE FROM house WHERE house_number = #{house_number}
+    </delete>
+    <select id="getHouseById" resultType="com.apartmentsystem.entity.House">
+        SELECT * FROM house WHERE id = #{id}
+    </select>
+    <select id="getHouseByHouseNumber" resultType="com.apartmentsystem.entity.House">
+        SELECT * FROM house WHERE house_number = #{house_number}
+    </select>
+</mapper>
