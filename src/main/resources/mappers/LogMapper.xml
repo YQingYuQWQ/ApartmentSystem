@@ -4,7 +4,7 @@
 <mapper namespace="com.apartmentsystem.mapper.LogMapper">
 
     <insert id="insertLog">
-        INSERT INTO log (user_id, action, created_at) VALUES
+        INSERT INTO log (user_id, action, timestamp) VALUES
         (#{user_id}, #{action}, NOW())
     </insert>
 </mapper>

@@ -3,7 +3,6 @@ package com.apartmentsystem.controller;
 import com.apartmentsystem.entity.Result;
 import com.apartmentsystem.service.impl.LogServiceImpl;
 import com.apartmentsystem.service.impl.UserServiceImpl;
-import com.apartmentsystem.util.RequestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

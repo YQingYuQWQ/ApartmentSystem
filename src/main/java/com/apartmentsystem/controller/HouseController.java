@@ -3,11 +3,9 @@ package com.apartmentsystem.controller;
 import com.apartmentsystem.entity.Result;
 import com.apartmentsystem.service.impl.HouseServiceImpl;
 import com.apartmentsystem.service.impl.LogServiceImpl;
-import com.apartmentsystem.util.RequestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @CrossOrigin
@@ -18,22 +16,22 @@ public class HouseController {
     @Autowired
     private LogServiceImpl logServiceImpl;
 
-    @PostMapping
+    @PostMapping("/insert")
     public Result insertHouse(@RequestParam String house_number,
                               @RequestParam String building_name,
                               @RequestParam int floor,
-                              @RequestParam int owner_id,
+                              @RequestParam(defaultValue = "null") Integer owner_id,
                               @RequestParam String status) {
         return houseServiceImpl.insertHouse(house_number, building_name, floor, owner_id, status);
     }
 
-    @PutMapping("/updateOwner")
+    @PostMapping("/updateOwner")
     public Result updateOwnerByHouseNumber(@RequestParam String house_number,
                                            @RequestParam int owner_id) {
         return houseServiceImpl.updateOwnerByHouseNumber(house_number, owner_id);
     }
 
-    @PutMapping("/updateStatus")
+    @PostMapping("/updateStatus")
     public Result updateStatusByHouseNumber(@RequestParam String house_number,
                                             @RequestParam String status) {
         return houseServiceImpl.updateStatusByHouseNumber(house_number, status);

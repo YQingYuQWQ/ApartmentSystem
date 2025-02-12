@@ -6,6 +6,7 @@ import com.apartmentsystem.mapper.UserMapper;
 import com.apartmentsystem.service.UserService;
 import com.apartmentsystem.util.JWTutil;
 import com.apartmentsystem.util.PasswordUtil;
+import com.apartmentsystem.util.UserHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -23,6 +24,8 @@ public class UserServiceImpl implements UserService {
     private PasswordUtil passwordUtil;
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private LogServiceImpl logServiceImpl;
 
     @Override
     public User getUserByUserName(String userName) {
@@ -75,6 +78,8 @@ public class UserServiceImpl implements UserService {
         //将token存入redis
         ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
         ops.set(token, token , 12, TimeUnit.HOURS);
+
+        logServiceImpl.insertLog(user.getId(), "登录");
         return Result.success(token);
     }
 
@@ -96,6 +101,8 @@ public class UserServiceImpl implements UserService {
         if (!newPassword.equals(rePassword)) {
             return Result.error("两次密码不一致");
         }
+
+        logServiceImpl.insertLog(UserHolder.getUser().getId(), "修改密码");
         userMapper.updateUserPasswordById(user.getId(), passwordUtil.encryptPassword(newPassword));
         return Result.success("修改成功");
     }
