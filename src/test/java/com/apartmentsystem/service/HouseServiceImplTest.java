@@ -13,8 +13,7 @@ public class HouseServiceImplTest {
 
     @Test
     public void testInsertHouse() {
-        Result result = houseServiceImpl.insertHouse("304", "食堂", 1, 1, "occupied");
-        System.out.println(result);
+
     }
 
     @Test

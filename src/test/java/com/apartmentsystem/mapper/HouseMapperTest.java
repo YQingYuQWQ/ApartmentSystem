@@ -1,10 +1,13 @@
 package com.apartmentsystem.mapper;
 
 import com.apartmentsystem.entity.House;
+import org.apache.ibatis.jdbc.Null;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.math.BigDecimal;
 
 @SpringBootTest
 public class HouseMapperTest {
@@ -18,7 +21,11 @@ public class HouseMapperTest {
         house.setBuilding_name("体育楼");
         house.setFloor(1);
         house.setStatus("vacant");
-        houseMapper.insertHouse(house.getHouse_number(), house.getBuilding_name(), house.getFloor(), null, house.getStatus());
+        house.setArea(18);
+        house.setPrice(BigDecimal.valueOf(2400));
+        house.setImages("images");
+        house.setOwner_id(null);
+        houseMapper.insertHouse(house);
     }
 
     @Test

@@ -15,10 +15,13 @@ public class House {
     private String house_number;
     private String building_name;
     private int floor;
-    private int owner_id;
+    private Integer owner_id;
     private String status;
     private String created_at;
     private String updated_at;
     private BigDecimal water_fee;
     private BigDecimal power_fee;
+    private BigDecimal price;
+    private int area;
+    private String images;
 }

@@ -1,5 +1,6 @@
 package com.apartmentsystem.controller;
 
+import com.apartmentsystem.entity.House;
 import com.apartmentsystem.entity.Result;
 import com.apartmentsystem.service.impl.HouseServiceImpl;
 import com.apartmentsystem.service.impl.LogServiceImpl;
@@ -17,12 +18,8 @@ public class HouseController {
     private LogServiceImpl logServiceImpl;
 
     @PostMapping("/insert")
-    public Result insertHouse(@RequestParam String house_number,
-                              @RequestParam String building_name,
-                              @RequestParam int floor,
-                              @RequestParam(defaultValue = "null") Integer owner_id,
-                              @RequestParam String status) {
-        return houseServiceImpl.insertHouse(house_number, building_name, floor, owner_id, status);
+    public Result insertHouse(@RequestBody House house) {
+        return houseServiceImpl.insertHouse(house);
     }
 
     @PostMapping("/updateOwner")

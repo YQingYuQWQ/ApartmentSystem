@@ -18,15 +18,15 @@ public class HouseServiceImpl implements HouseService {
     private LogServiceImpl logServiceImpl;
 
     @Override
-    public Result insertHouse(String house_number, String building_name, int floor, Integer owner_id, String status) {
-        House house = houseMapper.getHouseByHouseNumber(house_number);
-        if(house!=null)
+    public Result insertHouse(House house) {
+        House house1 = houseMapper.getHouseByHouseNumber(house.getHouse_number());
+        if(house1!=null)
             return Result.error("房屋已存在");
-        if(house_number==null||building_name==null||status==null)
+        if(house.getHouse_number()==null||house.getBuilding_name()==null||house.getStatus()==null)
             return Result.error("输入参数有误");
 
-        logServiceImpl.insertLog(UserHolder.getUser().getId(), "insert house " + "house_number: "+house_number+" building_name: "+building_name+" floor: "+floor+" owner_id: "+owner_id+" status: "+status);
-        houseMapper.insertHouse(house_number, building_name, floor, owner_id, status);
+        logServiceImpl.insertLog(UserHolder.getUser().getId(), "insert house " + "house_number: " +house.getHouse_number()+ " building_name: "+house.getBuilding_name()+" floor: "+house.getFloor());
+        houseMapper.insertHouse(house);
         return Result.success();
     }
 

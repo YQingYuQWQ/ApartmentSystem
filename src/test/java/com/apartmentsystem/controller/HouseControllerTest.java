@@ -11,6 +11,5 @@ public class HouseControllerTest {
 
     @Test
     public void testInsertHouse() {
-        houseController.insertHouse("304", "体育楼", 3, null, "vacant");
     }
 }

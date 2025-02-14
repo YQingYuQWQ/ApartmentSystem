@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface UserMapper {
     //根据用户名获取用户
-    User getUserByUserName(@Param("userName") String userName);
+    User getUserByUserName(@Param("username") String username);
     User getUserByEmail(@Param("email") String email);
     User getUserByPhone(@Param("phone") String phone);
     //根据id更新用户密码

@@ -14,8 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 public class UserController {
     @Autowired
     private UserServiceImpl userServiceImpl;
-    @Autowired
-    private LogServiceImpl logServiceImpl;
 
     @PostMapping("/register")
     public Result register(@RequestParam String username,
