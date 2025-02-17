@@ -56,9 +56,7 @@
 <script setup>
 import { ref, reactive, getCurrentInstance } from 'vue'
 import { ElMessage } from 'element-plus'
-
-const { appContext } = getCurrentInstance();
-const axios = appContext.config.globalProperties.$axios;
+import api from '@/config/axios.js'
 
 const loginFormRef = ref()
 const loading = ref(false)
@@ -86,7 +84,7 @@ const handleLogin = async () => {
     if (valid) {
       loading.value = true
 
-      axios.post(`user/login?username=${loginForm.username}&password=${loginForm.password}&role=${loginForm.role}`)
+      api.post(`user/login?username=${loginForm.username}&password=${loginForm.password}&role=${loginForm.role}`)
         .then(response => {
           loading.value = false
           if (response.data.code === 0) {
@@ -109,12 +107,6 @@ const handleLogin = async () => {
 </script>
 
 <style scoped lang="scss">
-html, body {
-  height: 100%;
-  margin: 0;
-  overflow: hidden;
-}
-
 .login-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #1a237e 0%, #4a148c 100%);
