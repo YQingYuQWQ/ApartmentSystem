@@ -85,11 +85,10 @@
 
 <script setup>
 import { ref, computed, onMounted, getCurrentInstance } from 'vue'
-import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import api from '@/config/axios'
+import router from '@/router/index'
 
-const router = useRouter()
 const token = ref("")
 const user = ref("")
 

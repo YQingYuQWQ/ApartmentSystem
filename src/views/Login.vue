@@ -55,13 +55,12 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import api from '@/config/axios.js'
+import router from '@/router/index'
 
 const loginFormRef = ref()
 const loading = ref(false)
-const router = useRouter()
 
 const loginForm = reactive({
   username: '',

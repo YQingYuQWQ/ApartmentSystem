@@ -3,14 +3,12 @@
 </template>
 <script setup>
 import { watch } from 'vue'
-import { useRoute } from 'vue-router'
-
-const route = useRoute()
+import router from '@/router/index'
 
 watch(
-  () => route.path,
+  () => router.currentRoute.value.path,
   (newPath) => {
-    if (newPath === '/login') {
+    if (newPath === '/login' || newPath === '/register') {
       document.documentElement.style.height = '100%';
       document.body.style.height = '100%';
       document.body.style.margin = '0';
