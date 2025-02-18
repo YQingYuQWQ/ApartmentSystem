@@ -48,4 +48,9 @@ public class HouseController {
     public Result getHouseById(@RequestParam int id) {
         return Result.success(houseServiceImpl.getHouseById(id));
     }
+
+    @GetMapping("/showList")
+    public Result showHouseList() {
+        return houseServiceImpl.showHouseList();
+    }
 }

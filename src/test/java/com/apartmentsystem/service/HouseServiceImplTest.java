@@ -33,4 +33,10 @@ public class HouseServiceImplTest {
         Result result = houseServiceImpl.deleteHouseByHouseNumber("304");
         System.out.println(result);
     }
+
+    @Test
+    public void testShowHouseList() {
+        Result result = houseServiceImpl.showHouseList();
+        System.out.println(result);
+    }
 }

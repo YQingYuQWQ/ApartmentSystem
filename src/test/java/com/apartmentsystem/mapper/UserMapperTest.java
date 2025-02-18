@@ -14,4 +14,9 @@ public class UserMapperTest {
         userMapper.insertUser("test", "123456", "2802274853@qq.com", "18242671272", 0);
     }
 
+    @Test
+    public void testGetUserByUserName() {
+        System.out.println(userMapper.getUserByUserName("test1"));
+    }
+
 }

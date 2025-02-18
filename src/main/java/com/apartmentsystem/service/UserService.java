@@ -10,4 +10,5 @@ public interface UserService {
     Result insertUser(String username, String password, String email, String phone, int role);
     Result login(String username, String password, int role);
     Result updatePassword(String oldPassword, String newPassword, String rePassword, String token);
+    Result insertNormalUser(User user);
 }

@@ -12,7 +12,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -48,7 +50,7 @@ public class UserServiceImpl implements UserService {
         if (userMapper.getUserByPhone(phone) != null) {
             return Result.error("手机号已存在");
         }
-        String encryptPassword = passwordUtil.encryptPassword(password);
+        String encryptPassword = PasswordUtil.encryptPassword(password);
         userMapper.insertUser(username, encryptPassword, email, phone, role);
         return Result.success("注册成功");
     }
@@ -60,7 +62,7 @@ public class UserServiceImpl implements UserService {
     */
     @Override
     public Result login(String username, String password, int role) {
-        User user = userMapper.getUserByUserName(username);
+        User user = userMapper.getUserAllByUserName(username);
         if (user == null) {
             return Result.error("用户不存在");
         }
@@ -68,7 +70,7 @@ public class UserServiceImpl implements UserService {
             return Result.error("密码错误");
         }
         if  (role != user.getRole()) {
-            return Result.error("角色错误");
+            return Result.error("角色选择错误");
         }
 
         Map<String, Object> claims = new HashMap<>();
@@ -103,7 +105,26 @@ public class UserServiceImpl implements UserService {
         }
 
         logServiceImpl.insertLog(UserHolder.getUser().getId(), "修改密码");
-        userMapper.updateUserPasswordById(user.getId(), passwordUtil.encryptPassword(newPassword));
+        userMapper.updateUserPasswordById(user.getId(), PasswordUtil.encryptPassword(newPassword));
         return Result.success("修改成功");
+    }
+
+    @Override
+    public Result insertNormalUser(User user) {
+        if(userMapper.getUserByUserName(user.getUsername()) != null)
+            return Result.error("用户名已存在");
+        if(userMapper.getUserByEmail(user.getEmail()) != null)
+            return Result.error("邮箱已存在");
+        if(userMapper.getUserByPhone(user.getPhone()) != null)
+            return Result.error("手机号已存在");
+        user.setPassword(PasswordUtil.encryptPassword(user.getPassword()));
+        userMapper.insertNormalUser(user);
+        return Result.success("注册成功");
+    }
+
+    public User getUserInfo(HttpServletRequest request) {
+        Map<String, Object> claims = JWTutil.verifyToken(request.getHeader("Authorization"));
+        Object username = claims.get("username");
+        return userMapper.getUserByUserName(username.toString());
     }
 }

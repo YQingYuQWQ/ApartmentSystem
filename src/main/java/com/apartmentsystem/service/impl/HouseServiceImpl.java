@@ -5,9 +5,12 @@ import com.apartmentsystem.entity.Result;
 import com.apartmentsystem.mapper.HouseMapper;
 import com.apartmentsystem.service.HouseService;
 import com.apartmentsystem.util.UserHolder;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -70,5 +73,11 @@ public class HouseServiceImpl implements HouseService {
     @Override
     public House getHouseById(int id) {
         return houseMapper.getHouseById(id);
+    }
+
+    @Override
+    public Result showHouseList() {
+        List<House> houseList = houseMapper.showHouseList();
+        return Result.success(houseList);
     }
 }

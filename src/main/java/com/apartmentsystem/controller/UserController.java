@@ -1,6 +1,7 @@
 package com.apartmentsystem.controller;
 
 import com.apartmentsystem.entity.Result;
+import com.apartmentsystem.entity.User;
 import com.apartmentsystem.service.impl.LogServiceImpl;
 import com.apartmentsystem.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +17,8 @@ public class UserController {
     private UserServiceImpl userServiceImpl;
 
     @PostMapping("/register")
-    public Result register(@RequestParam String username,
-                           @RequestParam String password,
-                           @RequestParam String email,
-                           @RequestParam String phone,
-                           @RequestParam int role
-                           ) {
-        return userServiceImpl.insertUser(username, password, email, phone, role);
+    public Result register(@RequestBody User user){
+        return userServiceImpl.insertNormalUser(user);
     }
 
     @PostMapping("/login")
@@ -31,4 +27,10 @@ public class UserController {
                         @RequestParam int role) {
         return userServiceImpl.login(username, password, role);
     }
+
+    @PostMapping("/getUserInfo")
+    public Result getUserInfo(HttpServletRequest request) {
+        return Result.success(userServiceImpl.getUserInfo(request));
+    }
+
 }

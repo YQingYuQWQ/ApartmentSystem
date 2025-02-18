@@ -33,4 +33,11 @@
     <select id="getHouseByHouseNumber" resultType="com.apartmentsystem.entity.House">
         SELECT * FROM house WHERE house_number = #{house_number}
     </select>
+    <select id="getHouseList" resultType="com.apartmentsystem.entity.House">
+        SELECT * FROM house
+    </select>
+    <select id="showHouseList" resultType="com.apartmentsystem.entity.House">
+        SELECT id, house_number, building_name, floor, status, price, area, images FROM house
+    </select>
+
 </mapper>

@@ -23,7 +23,6 @@ public class HouseMapperTest {
         house.setStatus("vacant");
         house.setArea(18);
         house.setPrice(BigDecimal.valueOf(2400));
-        house.setImages("images");
         house.setOwner_id(null);
         houseMapper.insertHouse(house);
     }
@@ -53,5 +52,10 @@ public class HouseMapperTest {
     @Test
     public void testdeleteHouseByHouseNumber() {
         houseMapper.deleteHouseByHouseNumber("304");
+    }
+
+    @Test
+    public void testShowHouseList() {
+        System.out.println(houseMapper.showHouseList());
     }
 }

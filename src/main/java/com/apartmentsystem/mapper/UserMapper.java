@@ -10,7 +10,9 @@ public interface UserMapper {
     User getUserByUserName(@Param("username") String username);
     User getUserByEmail(@Param("email") String email);
     User getUserByPhone(@Param("phone") String phone);
+    User getUserAllByUserName(@Param("username") String username);
     //根据id更新用户密码
     void updateUserPasswordById(@Param("id") int id, @Param("password") String password);
     void insertUser(@Param("username") String username, @Param("password") String password, @Param("email") String email, @Param("phone") String phone, @Param("role") int role);
+    void insertNormalUser(User user);
 }
