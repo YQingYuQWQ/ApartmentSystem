@@ -54,12 +54,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance } from 'vue'
+import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import api from '@/config/axios.js'
 
 const loginFormRef = ref()
 const loading = ref(false)
+const router = useRouter()
 
 const loginForm = reactive({
   username: '',
@@ -89,9 +91,9 @@ const handleLogin = async () => {
           loading.value = false
           if (response.data.code === 0) {
             localStorage.setItem('token', response.data.data)
+            console.log('设置token：'+ response.data.data)
             ElMessage.success('登录成功')
-
-            // router.push('/dashboard')
+            router.push('/')
           } else {
             ElMessage.error(response.data.message || '登录失败')
           }

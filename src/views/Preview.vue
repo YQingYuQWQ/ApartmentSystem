@@ -10,8 +10,14 @@
         <span>智慧公寓云管家</span>
       </div>
       <div class="nav-actions">
-        <el-button type="primary" round @click="goToLogin">登录</el-button>
-        <el-button type="success" round @click="goToRegister">立即注册</el-button>
+        <el-button type="primary" round @click="goToLogin" v-if="showButtons">登录</el-button>
+        <el-button type="success" round @click="goToRegister" v-if="showButtons">立即注册</el-button>
+        <div v-else class="user-info">
+          <el-avatar :src="user.photo" size="default"></el-avatar>  
+          <span class="user-nickname">{{ user.nick_name }}</span>
+          <el-button type="primary" round @click="goToProfile">个人中心</el-button>
+          <el-button type="warning" round @click="logOut">退出</el-button>
+        </div>
       </div>
     </nav>
 
@@ -84,26 +90,30 @@ import { ElMessage } from 'element-plus'
 import api from '@/config/axios'
 
 const router = useRouter()
+const token = ref("")
+const user = ref("")
 
-// 模拟数据
-const houses = ref([
-
-])
-const houses1 = ref([])
-
+const houses = ref([])
+const showButtons = ref(true)
 const filterStatus = ref('all')
 const filteredHouses = computed(() => {
   if (filterStatus.value === 'all') return houses.value
   return houses.value.filter(h => h.status === filterStatus.value)
 })
-
 const handleBook = (house) => {
   ElMessage.info('请登录后进行预订操作')
   router.push('/login')
 }
-
 const goToLogin = () => router.push('/login')
 const goToRegister = () => router.push('/register')
+
+const logOut = () => {
+  localStorage.removeItem('token');
+  user.value = {};
+  showButtons.value = true;
+  window.location.reload();
+};
+
 
 onMounted(() => {
   api.get('house/showList')
@@ -118,7 +128,19 @@ onMounted(() => {
       console.error('Error fetching house data:', error);
     });
 
-  console.log(houses);
+  token.value = localStorage.getItem('token')
+  console.log("token的值是：" + token.value)
+  if (token.value != null) {
+    console.log("触发token不为空")
+    api.post('user/getUserInfo')
+      .then(response => {
+        if (response.data.code === 0) {
+          showButtons.value = false;
+          console.log(response.data)
+          user.value = response.data.data;
+        }
+      })
+  }
 });
 </script>
 
@@ -128,7 +150,11 @@ onMounted(() => {
   position: relative;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
-
+.user-info {
+  display: flex;            /* 使用 Flexbox 布局 */
+  align-items: center;      /* 垂直居中对齐 */
+  gap: 10px;                /* 元素之间的间距 */
+}
 .background-layer {
   position: fixed;
   top: 0;

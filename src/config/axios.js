@@ -1,17 +1,19 @@
 import axios from 'axios';
 
-// 创建 axios 实例并设置默认的 baseURL
 const api = axios.create({
-  baseURL: 'http://ddns.myredstone.top:4089/', // 设置默认域名
-  timeout: 5000, // 可选，设置请求超时时间
+  baseURL: 'http://ddns.myredstone.top:4089/',
+  timeout: 5000,
 });
 
-axios.interceptors.request.use(
+api.interceptors.request.use(
     (config) => {
+      console.log('axios拦截器触发')
       const token = localStorage.getItem('token')
       if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`
+        config.headers['Authorization'] = `${token}`
+        console.log("当前token：" + token)
       }
+      console.log('Request Headers:', config.headers);
       return config
     },
     (error) => {
