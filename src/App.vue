@@ -13,11 +13,22 @@ watch(
       document.body.style.height = '100%';
       document.body.style.margin = '0';
       document.body.style.overflow = 'hidden';
+      
+      document.body.style.backgroundImage = `url(${require('@/assets/BG-login.jpg')})`;
+      document.body.style.backgroundSize = 'cover';  
+      document.body.style.backgroundPosition = 'center';  
     } else {
       document.documentElement.style.height = '';
       document.body.style.height = '';
       document.body.style.margin = '';
       document.body.style.overflow = '';
+    }
+
+    if(newPath === '/usercenter') 
+    {
+      document.body.style.backgroundImage = `url(${require('@/assets/BG-usercenter.png')})`;
+      document.body.style.backgroundSize = 'cover';  
+      document.body.style.backgroundPosition = 'center';  
     }
   },
   { immediate: true }

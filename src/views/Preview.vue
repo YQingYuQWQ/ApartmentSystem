@@ -57,15 +57,9 @@
 
             <div class="house-info">
               <div class="info-item">
-                <el-icon>
-                  <OfficeBuilding />
-                </el-icon>
                 {{ house.area }}㎡
               </div>
               <div class="info-item">
-                <el-icon>
-                  <Location />
-                </el-icon>
                 {{ house.location }}
               </div>
               <div class="info-item price">
@@ -84,7 +78,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, getCurrentInstance } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import api from '@/config/axios'
 import router from '@/router/index'
@@ -99,13 +93,17 @@ const filteredHouses = computed(() => {
   if (filterStatus.value === 'all') return houses.value
   return houses.value.filter(h => h.status === filterStatus.value)
 })
+
 const handleBook = (house) => {
-  ElMessage.info('请登录后进行预订操作')
-  router.push('/login')
+  if(token.value === null){
+    ElMessage.info('请登录后进行预订操作')
+    router.push('/login')
+  }
+  console.log(house.location)
 }
 const goToLogin = () => router.push('/login')
 const goToRegister = () => router.push('/register')
-
+const goToProfile = () => router.push('/usercenter')
 const logOut = () => {
   localStorage.removeItem('token');
   user.value = {};
@@ -128,9 +126,7 @@ onMounted(() => {
     });
 
   token.value = localStorage.getItem('token')
-  console.log("token的值是：" + token.value)
   if (token.value != null) {
-    console.log("触发token不为空")
     api.post('user/getUserInfo')
       .then(response => {
         if (response.data.code === 0) {

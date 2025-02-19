@@ -48,6 +48,7 @@
         >
           立即登录
         </el-button>
+        <el-link type="primary" @click="goToHome">返回首页</el-link>
       </el-form>
     </div>
   </div>
@@ -105,17 +106,21 @@ const handleLogin = async () => {
     }
   })
 }
+
+const goToHome = () => {
+  router.push('/')
+}
 </script>
 
 <style scoped lang="scss">
 .login-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a237e 0%, #4a148c 100%);
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
   overflow: hidden;
+  opacity: 0.9;
 
   &::before {
     content: '';
