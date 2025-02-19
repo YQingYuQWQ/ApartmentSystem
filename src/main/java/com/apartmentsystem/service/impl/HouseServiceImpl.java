@@ -56,6 +56,15 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
+    public Result updateStatusByHouseId(int id, String status) {
+        if(!Objects.equals(status, "occupied") && !Objects.equals(status, "vacant") && !Objects.equals(status, "under_maintenance"))
+            return Result.error("房屋状态有误");
+        logServiceImpl.insertLog(UserHolder.getUser().getId(), "update house status" + "id: "+id+" status: "+status);
+        houseMapper.updateStatusByHouseId(id, status);
+        return Result.success("修改房屋状态成功");
+    }
+
+    @Override
     public Result deleteHouseByHouseNumber(String house_number) {
         House house = houseMapper.getHouseByHouseNumber(house_number);
         if(house==null)
