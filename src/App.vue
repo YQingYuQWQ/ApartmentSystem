@@ -30,6 +30,11 @@ watch(
       document.body.style.backgroundSize = 'cover';  
       document.body.style.backgroundPosition = 'center';  
     }
+    if(newPath === '/houseinfo'){
+      document.body.style.backgroundImage = `url(${require('@/assets/BG-houseinfo.png')})`;
+      document.body.style.backgroundSize = 'cover';  
+      document.body.style.backgroundPosition = 'center'; 
+    }
   },
   { immediate: true }
 )

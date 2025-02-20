@@ -30,7 +30,7 @@
                 <el-card class="card-item" @click="goToBooking" v-else>
                     <div class="card-content">
                         <el-icon :size="40" color="#409EFF">
-                            <House />
+                            <Memo />
                         </el-icon>
                         <h3>查看租约</h3>
                         <p>查看租约以及合同内容</p>
@@ -39,8 +39,8 @@
             </el-col>
 
             <!-- 在线缴费 -->
-            <el-col :xs="24" :sm="12" :md="6">
-                <el-card class="card-item" @click="goToPayment">
+            <el-col :xs="24" :sm="12" :md="6" >
+                <el-card class="card-item" @click="goToPayment" >
                     <div class="card-content">
                         <el-icon :size="40" color="#67C23A">
                             <Money />
@@ -139,17 +139,50 @@
             </el-col>
         </el-row>
     </div>
+    <!-- 抽屉 -->
+    <el-drawer
+      title="缴费"
+      size="400px"
+      v-model="drawerVisible"
+      :before-close="handleClose"
+    >
+      <el-form :model="paymentForm" ref="paymentFormRef">
+        <!-- 缴费类型 -->
+        <el-form-item label="缴费类型" prop="paymentType">
+          <el-select v-model="paymentForm.paymentType" placeholder="请选择缴费类型">
+            <el-option label="水费" value="water"></el-option>
+            <el-option label="电费" value="electricity"></el-option>
+            <el-option label="物业费" value="property"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <!-- 缴费金额 -->
+        <el-form-item label="缴费金额" prop="amount">
+          <el-input v-model="paymentForm.amount" placeholder="请输入金额" />
+        </el-form-item>
+
+        <!-- 确认和取消按钮 -->
+        <div class="drawer-footer">
+          <el-button @click="closeDrawer">取消</el-button>
+          <el-button type="primary" @click="handlePayment">确认缴费</el-button>
+        </div>
+      </el-form>
+    </el-drawer>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { ElMessage, ElLoading } from 'element-plus'
+import { ElMessage, ElLoading, ElMessageBox } from 'element-plus'
 import router from '@/router/index'
 import api from '@/config/axios'
+import { House, Money, Bell, Tools, Document, Clock, Memo} from '@element-plus/icons-vue'
 
 const userInfo = ref({})
+const paymentForm = ref({})
+
 const showcard = ref(true)
 const loading = ref(true) 
+const drawerVisible = ref(false)
 
 const recentBills = ref([
     { date: '2024-03-15', type: '水费', amount: '¥156.00', status: '已支付' },
@@ -179,9 +212,27 @@ const statusTypeMap = {
 }
 
 const goToHome = () => router.push('/')
-const goToPayment = () => router.push('/payment')
 const goToNotice = () => router.push('/notice')
 const goToRepair = () => router.push('/repair')
+const goToPayment = () => {
+    if(!showcard){
+        ElMessage.warning('您还未租房！')
+        return;
+    }
+    drawerVisible.value = true
+    console.log('1')
+}
+const closeDrawer = () => {
+  drawerVisible.value = false
+  paymentForm.value = {}
+}
+const handleClose = () => {
+  ElMessageBox.confirm('确定关闭缴费吗?')
+    .then(() => {
+        closeDrawer();
+    })
+}
+
 
 onMounted(async () => {
     try {

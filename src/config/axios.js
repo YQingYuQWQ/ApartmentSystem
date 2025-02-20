@@ -7,13 +7,10 @@ const api = axios.create({
 
 api.interceptors.request.use(
     (config) => {
-      console.log('axios拦截器触发')
       const token = localStorage.getItem('token')
       if (token) {
         config.headers['Authorization'] = `${token}`
-        console.log("当前token：" + token)
       }
-      console.log('Request Headers:', config.headers);
       return config
     },
     (error) => {

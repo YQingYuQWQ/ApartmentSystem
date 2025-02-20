@@ -13,7 +13,7 @@
         <el-button type="primary" round @click="goToLogin" v-if="showButtons">登录</el-button>
         <el-button type="success" round @click="goToRegister" v-if="showButtons">立即注册</el-button>
         <div v-else class="user-info">
-          <el-avatar :src="user.photo" size="default"></el-avatar>  
+          <el-avatar :src="user.photo" size="default"></el-avatar>
           <span class="user-nickname">{{ user.nick_name }}</span>
           <el-button type="primary" round @click="goToProfile">个人中心</el-button>
           <el-button type="warning" round @click="logOut">退出</el-button>
@@ -57,9 +57,15 @@
 
             <div class="house-info">
               <div class="info-item">
+                <el-icon>
+                  <OfficeBuilding />
+                </el-icon>
                 {{ house.area }}㎡
               </div>
               <div class="info-item">
+                <el-icon>
+                  <Location />
+                </el-icon>
                 {{ house.location }}
               </div>
               <div class="info-item price">
@@ -82,6 +88,7 @@ import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import api from '@/config/axios'
 import router from '@/router/index'
+import { OfficeBuilding, Location } from '@element-plus/icons-vue'
 
 const token = ref("")
 const user = ref("")
@@ -95,11 +102,23 @@ const filteredHouses = computed(() => {
 })
 
 const handleBook = (house) => {
-  if(token.value === null){
+  if (token.value === null) {
     ElMessage.info('请登录后进行预订操作')
     router.push('/login')
   }
-  console.log(house.location)
+  router.push({
+    path: '/houseinfo',
+    query: {
+      id: house.id,
+      house_number: house.house_number,
+      building_name: house.building_name,
+      floor: house.floor,
+      status: house.status,
+      area: house.area,
+      price: house.price,
+      images: JSON.stringify(house.images)
+    }
+  });
 }
 const goToLogin = () => router.push('/login')
 const goToRegister = () => router.push('/register')
@@ -145,11 +164,16 @@ onMounted(() => {
   position: relative;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
+
 .user-info {
-  display: flex;            /* 使用 Flexbox 布局 */
-  align-items: center;      /* 垂直居中对齐 */
-  gap: 10px;                /* 元素之间的间距 */
+  display: flex;
+  /* 使用 Flexbox 布局 */
+  align-items: center;
+  /* 垂直居中对齐 */
+  gap: 10px;
+  /* 元素之间的间距 */
 }
+
 .background-layer {
   position: fixed;
   top: 0;

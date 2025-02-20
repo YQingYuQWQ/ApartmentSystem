@@ -3,6 +3,7 @@ import Login from '@/views/Login.vue'
 import Preview from '@/views/Preview.vue'
 import Register from '@/views/Register.vue'
 import UserCenter from '@/views/UserCenter.vue'
+import HouseInfo from '@/views/HouseInfo.vue'
 
 const routes = [
   {
@@ -24,6 +25,11 @@ const routes = [
     path: '/usercenter',
     name: 'usercenter',
     component: UserCenter
+  },
+  {
+    path: '/houseinfo',
+    name: 'houseinfo',
+    component: HouseInfo
   }
 ]
 
