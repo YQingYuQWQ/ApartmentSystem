@@ -40,7 +40,7 @@ public class FeeServiceImpl implements FeeService{
     private LogServiceImpl logServiceImpl;
 
     @Override
-    public Result insertFee(Fee fee) throws AlipayApiException {
+    public String insertFee(Fee fee) throws AlipayApiException {
         // 生成订单号
         fee.setFee_number(generateOrderNumber("Fee"));
         if(fee.getType().equals("deposit")){
@@ -48,28 +48,31 @@ public class FeeServiceImpl implements FeeService{
         }
         feeMapper.insertFee(fee);
         createAliPayOrderForm(fee);
-        return Result.success("订单创建成功\n" + "订单编号：" + fee.getFee_number());
+        return fee.getFee_number();
     }
 
     @Override
-    public Result insertdepositFee(Fee fee) throws AlipayApiException {
+    public String insertdepositFee(Fee fee) throws AlipayApiException {
         if(!"vacant".equals(houseServiceImpl.getStatusByHouseNumber(fee.getHouse_number())))
-            return Result.error("房屋已经被预定或售出，请刷新页面重试");
+            throw new RuntimeException("房屋已被预定");
         if(leaseContractServiceImpl.selectActiveLeaseContractByUserId(UserHolder.getUser().getId()) != null)
-            return Result.error("您已经租赁了房屋，无需再次预定");
+            throw new RuntimeException("您已经有租赁合同");
 
         fee.setFee_number(generateOrderNumber("Fee"));
+        fee.setType("deposit");
+        fee.setAmount(houseServiceImpl.getHouseByHouseNumber(fee.getHouse_number()).getDeposit());
+
+        houseServiceImpl.updateStatusByHouseNumber(fee.getHouse_number(), "booked");
         logServiceImpl.insertLog(UserHolder.getUser().getId(), "预定房屋" + fee.getHouse_number());
         feeMapper.insertFee(fee);
         if (!createAliPayOrderForm(fee))
-            return Result.error("订单创建失败");
-        return Result.success(fee.getFee_number());
+            throw new RuntimeException("支付宝订单生成失败");
+        return fee.getFee_number();
     }
 
     @Override
-    public Result updateFeePaidById(int id) {
+    public void updateFeePaidById(int id) {
         feeMapper.updateFeePaidById(id);
-        return Result.success("订单更新成功");
     }
 
     @Override

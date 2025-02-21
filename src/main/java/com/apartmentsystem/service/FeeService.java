@@ -7,9 +7,9 @@ import com.apartmentsystem.entity.Result;
 import java.util.List;
 
 public interface FeeService {
-    Result insertFee(Fee fee) throws AlipayApiException;
-    Result insertdepositFee(Fee fee) throws AlipayApiException;
-    Result updateFeePaidById(int id);
+    String insertFee(Fee fee) throws AlipayApiException;
+    String insertdepositFee(Fee fee) throws AlipayApiException;
+    void updateFeePaidById(int id);
     List<Fee> getFeeByHouseNumber(String house_number);
     Fee getFeeById(int id);
     boolean createAliPayOrderForm(Fee fee) throws AlipayApiException;

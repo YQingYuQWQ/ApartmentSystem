@@ -16,12 +16,7 @@ public class FeeController {
 
     @PostMapping("/insertFee")
     public Result insertFee(@RequestBody Fee fee) throws AlipayApiException {
-        return Result.success(feeServiceImpl.insertFee(fee).getData());
-    }
-
-    @PostMapping("/updateFee")
-    public Result updateFeeByHouseNumber(@RequestParam int id) {
-        return Result.success(feeServiceImpl.updateFeePaidById(id).getData());
+        return Result.success(feeServiceImpl.insertFee(fee));
     }
 
     @GetMapping("/getFeeByHouseNumber")
@@ -30,7 +25,12 @@ public class FeeController {
     }
 
     @GetMapping("/getFeeById")
-    public void getFeeById(@RequestParam int id) {
-        feeServiceImpl.getFeeById(id);
+    public Result getFeeById(@RequestParam int id) {
+        return Result.success(feeServiceImpl.getFeeById(id));
+    }
+
+    @PostMapping("/createDepositFee")
+    public Result createDepositFee(@RequestBody Fee fee) throws AlipayApiException {
+        return Result.success(feeServiceImpl.insertdepositFee(fee));
     }
 }

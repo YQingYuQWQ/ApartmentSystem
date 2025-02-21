@@ -22,6 +22,7 @@ public class House {
     private String updated_at;
     private BigDecimal water_fee;
     private BigDecimal power_fee;
+    private BigDecimal deposit;
     private BigDecimal price;
     private int area;
     private String images;
