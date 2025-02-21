@@ -86,12 +86,15 @@ const handleLogin = async () => {
     if (valid) {
       loading.value = true
 
-      api.post(`user/login?username=${loginForm.username}&password=${loginForm.password}&role=${loginForm.role}`)
+      api.post(`user/login?`, {
+        username: loginForm.username,
+        password: loginForm.password,
+        role: loginForm.role
+      })
         .then(response => {
           loading.value = false
           if (response.data.code === 0) {
             localStorage.setItem('token', response.data.data)
-            console.log('设置token：'+ response.data.data)
             ElMessage.success('登录成功')
             router.push('/')
           } else {

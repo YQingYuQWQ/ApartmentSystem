@@ -1,5 +1,6 @@
 <template>
-  <div class="home-container">
+
+  <div class="home-container" v-loading.fullscreen.lock="loading">
     <!-- 渐变背景层 -->
     <div class="background-layer"></div>
 
@@ -36,48 +37,49 @@
       </div>
 
       <!-- 房屋卡片网格 -->
-      <div class="house-grid">
-        <transition-group name="staggered-fade" tag="div" class="house-grid">
-          <el-card v-for="(house, index) in filteredHouses" :key="house.id" class="house-card"
-            :style="{ 'transition-delay': `${index * 0.1}s` }">
-            <template #header>
-              <div class="card-header">
-                <el-tag :type="house.status === 'vacant' ? 'success' : 'danger'" effect="dark" class="status-tag">
-                  {{ house.status === 'vacant' ? '可租' : '已入住' }}
-                </el-tag>
-                <h3 class="house-building_name">{{ house.building_name }}</h3>
-              </div>
-            </template>
+      <div class="house-grid" >
+          <transition-group name="staggered-fade" tag="div" class="house-grid" >
+            <el-card v-for="(house, index) in filteredHouses" :key="house.id" class="house-card"
+              :style="{ 'transition-delay': `${index * 0.1}s` }">
+              <template #header>
+                <div class="card-header">
+                  <el-tag :type="house.status === 'vacant' ? 'success' : 'danger'" effect="dark" class="status-tag">
+                    {{ house.status === 'vacant' ? '可租' : '已入住' }}
+                  </el-tag>
+                  <h3 class="house-building_name">{{ house.building_name }}</h3>
+                </div>
+              </template>
 
-            <el-carousel :interval="5000" height="200px" indicator-position="outside">
-              <el-carousel-item v-for="img in house.images" :key="img">
-                <el-image :src="img" fit="cover" class="house-image" :preview-src-list="house.images" />
-              </el-carousel-item>
-            </el-carousel>
+              <el-carousel :interval="5000" height="200px" indicator-position="outside">
+                <el-carousel-item v-for="img in house.images" :key="img">
+                  <el-image :src="img" fit="cover" class="house-image" :preview-src-list="house.images" />
+                </el-carousel-item>
+              </el-carousel>
 
-            <div class="house-info">
-              <div class="info-item">
-                <el-icon>
-                  <OfficeBuilding />
-                </el-icon>
-                {{ house.area }}㎡
+              <div class="house-info">
+                <div class="info-item">
+                  <el-icon>
+                    <OfficeBuilding />
+                  </el-icon>
+                  {{ house.area }}㎡
+                </div>
+                <div class="info-item">
+                  <el-icon>
+                    <Location />
+                  </el-icon>
+                  {{ house.location }}
+                </div>
+                <div class="info-item price">
+                  ¥{{ house.price }}/月
+                </div>
               </div>
-              <div class="info-item">
-                <el-icon>
-                  <Location />
-                </el-icon>
-                {{ house.location }}
-              </div>
-              <div class="info-item price">
-                ¥{{ house.price }}/月
-              </div>
-            </div>
 
-            <el-button type="primary" class="book-btn" :disabled="house.status !== 'vacant'" @click="handleBook(house)">
-              {{ house.status === 'vacant' ? '立即预订' : '已出租' }}
-            </el-button>
-          </el-card>
-        </transition-group>
+              <el-button type="primary" class="book-btn" :disabled="house.status !== 'vacant'"
+                @click="handleBook(house)">
+                {{ house.status === 'vacant' ? '立即预订' : '已出租' }}
+              </el-button>
+            </el-card>
+          </transition-group>
       </div>
     </main>
   </div>
@@ -85,7 +87,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElLoading } from 'element-plus'
 import api from '@/config/axios'
 import router from '@/router/index'
 import { OfficeBuilding, Location } from '@element-plus/icons-vue'
@@ -94,6 +96,7 @@ const token = ref("")
 const user = ref("")
 
 const houses = ref([])
+const loading = ref(true)
 const showButtons = ref(true)
 const filterStatus = ref('all')
 const filteredHouses = computed(() => {
@@ -150,11 +153,21 @@ onMounted(() => {
       .then(response => {
         if (response.data.code === 0) {
           showButtons.value = false;
-          console.log(response.data)
           user.value = response.data.data;
+          return;
         }
-      })
+      }).catch(error => {
+        // 请求失败，处理错误
+        if (error.response && error.response.status === 401) {
+          ElMessage.warning('授权过期请重新登录');
+          localStorage.removeItem('token');
+          router.replace();
+        } else {
+          console.log('其他错误:', error);
+        }
+      });
   }
+  loading.value = false;
 });
 </script>
 
