@@ -10,8 +10,6 @@ import com.alipay.api.domain.AlipayTradePrecreateModel;
 import com.alipay.api.request.AlipayTradePrecreateRequest;
 import com.alipay.api.response.AlipayTradePrecreateResponse;
 import com.apartmentsystem.entity.Fee;
-import com.apartmentsystem.entity.Result;
-import com.apartmentsystem.entity.User;
 import com.apartmentsystem.mapper.FeeMapper;
 import com.apartmentsystem.prop.AlipayProperties;
 import com.apartmentsystem.service.FeeService;
