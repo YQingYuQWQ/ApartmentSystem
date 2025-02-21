@@ -25,4 +25,5 @@ public class House {
     private BigDecimal price;
     private int area;
     private String images;
+    private String images_info;
 }

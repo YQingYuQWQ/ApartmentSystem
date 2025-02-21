@@ -51,7 +51,7 @@ public class LeaseContractServiceImpl implements LeaseContractService {
     }
 
     @Override
-    public LeaseContract selectActiveLeaseContractByUserId(LeaseContract leaseContract) {
-        return leaseContractMapper.selectActiveLeaseContractByUserId(leaseContract);
+    public LeaseContract selectActiveLeaseContractByUserId(int user_id) {
+        return leaseContractMapper.selectActiveLeaseContractByUserId(user_id);
     }
 }

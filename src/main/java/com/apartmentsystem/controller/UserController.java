@@ -17,20 +17,19 @@ public class UserController {
     private UserServiceImpl userServiceImpl;
 
     @PostMapping("/register")
-    public Result register(@RequestBody User user){
-        return userServiceImpl.insertNormalUser(user);
+    public Result<Object> register(@RequestBody User user){
+        userServiceImpl.insertNormalUser(user);
+        return Result.success();
     }
 
     @PostMapping("/login")
-    public Result login(@RequestParam String username,
-                        @RequestParam String password,
-                        @RequestParam int role) {
-        return userServiceImpl.login(username, password, role);
+    public Result<Object> login(@RequestBody User user) {
+        return Result.success(userServiceImpl.login(user));
     }
 
     @PostMapping("/getUserInfo")
-    public Result getUserInfo(HttpServletRequest request) {
-        return Result.success(userServiceImpl.getUserInfo(request));
+    public Result<Object> getUserInfo() {
+        return Result.success(userServiceImpl.getUserInfo());
     }
 
 }

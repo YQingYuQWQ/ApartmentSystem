@@ -65,8 +65,16 @@ public class LeaseContractMapperTest {
 
     @Test
     public void testSelectActiveLeaseContractByUserId() {
-        LeaseContract leaseContract = new LeaseContract();
-        leaseContract.setUser_id(1);
-        System.out.println(leaseContractMapper.selectActiveLeaseContractByUserId(leaseContract));
+    }
+
+    @Autowired
+    private HouseMapper houseMapper;
+
+    @Test
+    public void testGetStatusByHouseNumber(){
+        if(houseMapper.getStatusByHouseNumber("99").equals("vacant"))
+            System.out.println("房屋未被租赁");
+        else
+            System.out.println("房屋已被租赁");
     }
 }

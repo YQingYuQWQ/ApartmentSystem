@@ -11,5 +11,5 @@ public interface LeaseContractService {
     Result deleteLeaseContractById(LeaseContract leaseContract);
     LeaseContract selectLeaseContractByUserName(LeaseContract leaseContract);
     List<LeaseContract> selectAllLeaseContract();
-    LeaseContract selectActiveLeaseContractByUserId(LeaseContract leaseContract);
+    LeaseContract selectActiveLeaseContractByUserId(int user_id);
 }

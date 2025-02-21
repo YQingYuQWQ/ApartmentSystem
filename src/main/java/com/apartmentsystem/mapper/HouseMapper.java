@@ -11,6 +11,7 @@ public interface HouseMapper {
     void insertHouse(House house);
     House getHouseByHouseNumber(@Param("house_number") String house_number);
     House getHouseById(@Param("id") int id);
+    String getStatusByHouseNumber(@Param("house_number") String house_number);
     void updateOwnerByHouseNumber(@Param("house_number") String house_number, @Param("owner_id") int owner_id);
     void updateStatusByHouseNumber(@Param("house_number") String house_number, @Param("status") String status);
     void updateStatusByHouseId(@Param("id") int id, @Param("status") String status);

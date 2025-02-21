@@ -15,6 +15,6 @@ public class LeaseContractController {
 
     @PostMapping("/getActiveLeaseContractByUserId")
     public Result getActiveLeaseContractByUserId(@RequestBody LeaseContract leaseContract) {
-        return Result.success(leaseContractServiceImpl.selectActiveLeaseContractByUserId(leaseContract));
+        return Result.success(leaseContractServiceImpl.selectActiveLeaseContractByUserId(leaseContract.getUser_id()));
     }
 }

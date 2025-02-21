@@ -21,4 +21,7 @@
     <select id="getFeeByFeeNumber" resultType="com.apartmentsystem.entity.Fee">
         SELECT * FROM fee WHERE fee_number = #{fee_number}
     </select>
+    <select id="getFalsePaidFeeByHouseNumber" resultType="com.apartmentsystem.entity.Fee">
+        SELECT * FROM fee WHERE house_number = #{house_number} AND paid = false
+    </select>
 </mapper>

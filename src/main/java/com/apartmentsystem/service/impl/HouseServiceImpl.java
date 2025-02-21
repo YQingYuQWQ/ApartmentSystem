@@ -85,6 +85,11 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
+    public String getStatusByHouseNumber(String house_number) {
+        return houseMapper.getStatusByHouseNumber(house_number);
+    }
+
+    @Override
     public Result showHouseList() {
         List<House> houseList = houseMapper.showHouseList();
         return Result.success(houseList);

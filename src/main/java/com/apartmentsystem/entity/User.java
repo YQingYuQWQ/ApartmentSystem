@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class User {
-    private int id;
+    private Integer id;
     private String username;
     private String password;
     private String email;

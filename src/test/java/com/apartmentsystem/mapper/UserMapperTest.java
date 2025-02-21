@@ -1,5 +1,6 @@
 package com.apartmentsystem.mapper;
 
+import com.apartmentsystem.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,7 +12,14 @@ public class UserMapperTest {
 
     @Test
     public void testInsertUser() {
-        userMapper.insertUser("test", "123456", "2802274853@qq.com", "18242671272", 0);
+        User user = new User();
+        user.setUsername("oio");
+        user.setPassword("123456");
+        user.setEmail("123009@qq.com");
+        user.setPhone("12345678901");
+        user.setRole(1);
+        user.setNick_name("test1");
+        System.out.println(userMapper.insertNormalUser(user));
     }
 
     @Test

@@ -14,5 +14,6 @@ public interface HouseService {
     Result deleteHouseByHouseNumber(String house_number);
     House getHouseByHouseNumber(String house_number);
     House getHouseById(int id);
+    String getStatusByHouseNumber(String house_number);
     Result showHouseList();
 }

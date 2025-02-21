@@ -4,11 +4,9 @@
 <mapper namespace="com.apartmentsystem.mapper.HouseMapper">
 
     <insert id="insertHouse">
-        INSERT INTO house (house_number, building_name, floor, owner_id, status, created_at, updated_at, water_fee, power_fee, price, area, images) VALUES
-        (#{house_number}, #{building_name}, #{floor}, #{owner_id}, #{status}, NOW(), NOW(), #{water_fee}, #{power_fee}, #{price}, #{area}, #{images})
+        INSERT INTO house (house_number, building_name, floor, owner_id, status, created_at, updated_at, water_fee, power_fee, price, area, images, images_info) VALUES
+        (#{house_number}, #{building_name}, #{floor}, #{owner_id}, #{status}, NOW(), NOW(), #{water_fee}, #{power_fee}, #{price}, #{area}, #{images}, #{images_info})
     </insert>
-
-    
     <update id="updateOwnerByHouseNumber">
         UPDATE house SET owner_id = #{owner_id}, updated_at = NOW() WHERE house_number = #{house_number}
     </update>
@@ -41,6 +39,9 @@
     </select>
     <select id="showHouseList" resultType="com.apartmentsystem.entity.House">
         SELECT id, house_number, building_name, floor, status, price, area, images FROM house
+    </select>
+    <select id="getStatusByHouseNumber" resultType="java.lang.String">
+        SELECT status FROM house WHERE house_number = #{house_number}
     </select>
 
 </mapper>

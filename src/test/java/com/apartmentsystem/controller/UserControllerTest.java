@@ -23,6 +23,9 @@ public class UserControllerTest {
 
     @Test
     public void testLogin() {
-        System.out.println(userController.login("test1", "1456", 0));
+        User user = new User();
+        user.setUsername("test111");
+        user.setPassword("1456");
+        System.out.println(userController.login(user));
     }
 }
