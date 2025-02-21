@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 public interface AlipayService {
-    Result handleAlipayCallback(HttpServletRequest request);
+    void handleAlipayCallback(HttpServletRequest request);
     Map<String, String> getParamsFromRequest(HttpServletRequest request);
     void createOrder(String outTradeNo, String totalAmount, String subject, String body);
 }

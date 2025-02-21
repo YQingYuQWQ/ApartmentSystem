@@ -63,6 +63,7 @@ public class FeeServiceImpl implements FeeService{
         houseServiceImpl.updateStatusByHouseNumber(fee.getHouse_number(), "booked");
         logServiceImpl.insertLog(UserHolder.getUser().getId(), "预定房屋" + fee.getHouse_number());
         feeMapper.insertFee(fee);
+        createAliPayOrderForm(fee);
         if (!createAliPayOrderForm(fee))
             throw new RuntimeException("支付宝订单生成失败");
         return fee.getFee_number();
@@ -71,6 +72,23 @@ public class FeeServiceImpl implements FeeService{
     @Override
     public void updateFeePaidById(int id) {
         feeMapper.updateFeePaidById(id);
+    }
+
+    @Override
+    public void updateFeeStatusByFeeNumber(String fee_number, boolean status) {
+        feeMapper.updateFeeStatusByFeeNumber(fee_number, status);
+        switch (feeMapper.getFeeByFeeNumber(fee_number).getType()){
+            case "deposit":
+                houseServiceImpl.updateStatusByHouseNumber(feeMapper.getFeeByFeeNumber(fee_number).getHouse_number(), "occupied");
+                break;
+            case "rent":
+            case "water":
+            case "power":
+            case "utilities":
+            case "maintenance":
+            default:
+                throw new RuntimeException("费用类型错误");
+        }
     }
 
     @Override
@@ -117,6 +135,7 @@ public class FeeServiceImpl implements FeeService{
         }
         fee.setDue_date(feeMapper.getFeeById(fee.getId()).getDue_date());
         model.setTimeExpire(DateFormatUtil.formatDate(fee.getDue_date()));
+        model.setBody(fee.getFee_number());
         AlipayTradePrecreateResponse response = alipayClient.execute(request);
         QrCodeUtil.generate(response.getQrCode(), 500, 500, FileUtil.file("E:/QrCode/"+ fee.getFee_number() +".jpg"));
         return true;

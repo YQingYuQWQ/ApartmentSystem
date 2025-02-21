@@ -58,4 +58,9 @@ public class HouseMapperTest {
     public void testShowHouseList() {
         System.out.println(houseMapper.showHouseList());
     }
+
+    @Test
+    public void testGetHouseList() {
+        System.out.println(houseMapper.getHouseList());
+    }
 }

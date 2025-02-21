@@ -3,6 +3,7 @@ package com.apartmentsystem.service.impl;
 import com.apartmentsystem.entity.Result;
 import com.apartmentsystem.service.AlipayService;
 import com.apartmentsystem.util.AlipayUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,17 +12,20 @@ import java.util.Map;
 
 @Service
 public class AlipayServiceImpl implements AlipayService {
+    @Autowired
+    private FeeServiceImpl feeServiceImpl;
+
     /**
      * 处理支付宝回调
      */
-    public Result handleAlipayCallback(HttpServletRequest request) {
+    public void handleAlipayCallback(HttpServletRequest request) {
         // 1. 获取支付宝回调参数
         Map<String, String> params = getParamsFromRequest(request);
 
         // 2. 进行验签（调用 AlipayUtil）
         if (!AlipayUtil.verifySignature(params)) {
             System.err.println("支付宝回调验签失败！");
-            return Result.error("支付宝回调验签失败！");
+            throw new RuntimeException("支付宝回调验签失败！");
         }
 
         System.out.println("支付宝回调验签成功！");
@@ -32,11 +36,10 @@ public class AlipayServiceImpl implements AlipayService {
         String tradeStatus = params.get("trade_status"); // 交易状态
 
         // 4. 处理订单业务逻辑
-        if ("TRADE_SUCCESS".equals(tradeStatus)) {
-            return Result.success();
-        }
-
-        return Result.error("支付宝回调处理失败！");
+        if (!"TRADE_SUCCESS".equals(tradeStatus))
+            throw new RuntimeException("支付宝回调交易状态不是TRADE_SUCCESS！");
+        String fee_number = params.get("body");
+        feeServiceImpl.updateFeeStatusByFeeNumber(fee_number, true);
     }
 
     /**

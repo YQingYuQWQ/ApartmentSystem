@@ -15,4 +15,5 @@ public interface FeeMapper {
     Fee getFeeByFeeNumber(@Param("fee_number")String fee_number);
     List<Fee> getFeeByStatus(@Param("status")boolean status);
     Fee getFalsePaidFeeByHouseNumber(@Param("house_number")String house_number);
+    void updateFeeStatusByFeeNumber(@Param("fee_number")String fee_number, @Param("status")boolean status);
 }
