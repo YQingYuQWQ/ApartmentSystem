@@ -6,9 +6,8 @@ import com.apartmentsystem.entity.Result;
 import java.util.List;
 
 public interface LeaseContractService {
-    Result insertLeaseContract(LeaseContract leaseContract);
-    Result updateLeaseContract(LeaseContract leaseContract);
-    Result deleteLeaseContractById(LeaseContract leaseContract);
+    Integer insertLeaseContract(LeaseContract leaseContract);
+    void updateLeaseContract(LeaseContract leaseContract);
     LeaseContract selectLeaseContractByUserName(LeaseContract leaseContract);
     List<LeaseContract> selectAllLeaseContract();
     LeaseContract selectActiveLeaseContractByUserId(int user_id);

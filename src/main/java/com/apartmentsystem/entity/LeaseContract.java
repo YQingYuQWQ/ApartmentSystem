@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LeaseContract {
-    private int id;
+    private Integer id;
     private int house_id;
     private int user_id;
     private Date start_date;

@@ -19,25 +19,24 @@ public class LeaseContractServiceImpl implements LeaseContractService {
     @Autowired
     private LogServiceImpl logServiceImpl;
 
+
     @Override
-    public Result insertLeaseContract(LeaseContract leaseContract) {
-        int house_id = leaseContract.getHouse_id();
-        if(!houseServiceImpl.getHouseById(house_id).getStatus().equals("vacant"))
-            return Result.error("房屋已被租赁");
+    public Integer insertLeaseContract(LeaseContract leaseContract) {
+        if(!"waiting".equals(houseServiceImpl.getHouseById(leaseContract.getHouse_id()).getStatus()))
+            throw new RuntimeException("房屋不处于已预定状态");
+
+        leaseContract.setDeposit(houseServiceImpl.getHouseById(leaseContract.getHouse_id()).getDeposit());
+        leaseContract.setMonthly_rent(houseServiceImpl.getHouseById(leaseContract.getHouse_id()).getPrice());
+
         logServiceImpl.insertLog(UserHolder.getUser().getId(), "创建合同" + leaseContract.getUser_id());
         leaseContractMapper.insertLeaseContract(leaseContract);
         houseServiceImpl.updateStatusByHouseId(leaseContract.getHouse_id(), "occupied");
-        return Result.success("创建合同成功");
+        return leaseContract.getId();
     }
 
     @Override
-    public Result updateLeaseContract(LeaseContract leaseContract) {
-        return null;
-    }
-
-    @Override
-    public Result deleteLeaseContractById(LeaseContract leaseContract) {
-        return null;
+    public void updateLeaseContract(LeaseContract leaseContract) {
+        leaseContractMapper.updateLeaseContractByUserId(leaseContract);
     }
 
     @Override
