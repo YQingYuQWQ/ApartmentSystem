@@ -19,24 +19,28 @@ public class HouseController {
 
     @PostMapping("/insert")
     public Result insertHouse(@RequestBody House house) {
-        return houseServiceImpl.insertHouse(house);
+        houseServiceImpl.insertHouse(house);
+        return Result.success();
     }
 
     @PostMapping("/updateOwner")
     public Result updateOwnerByHouseNumber(@RequestParam String house_number,
                                            @RequestParam int owner_id) {
-        return houseServiceImpl.updateOwnerByHouseNumber(house_number, owner_id);
+        houseServiceImpl.updateOwnerByHouseNumber(house_number, owner_id);
+        return Result.success();
     }
 
     @PostMapping("/updateStatus")
     public Result updateStatusByHouseNumber(@RequestParam String house_number,
                                             @RequestParam String status) {
-        return houseServiceImpl.updateStatusByHouseNumber(house_number, status);
+        houseServiceImpl.updateStatusByHouseNumber(house_number, status);
+        return Result.success();
     }
 
     @PostMapping("/delete")
     public Result deleteHouseByHouseNumber(@RequestParam String house_number) {
-        return houseServiceImpl.deleteHouseByHouseNumber(house_number);
+        houseServiceImpl.deleteHouseByHouseNumber(house_number);
+        return Result.success();
     }
 
     @GetMapping("/getByHouseNumber")
@@ -51,6 +55,6 @@ public class HouseController {
 
     @GetMapping("/showList")
     public Result showHouseList() {
-        return houseServiceImpl.showHouseList();
+        return Result.success(houseServiceImpl.showHouseList());
     }
 }

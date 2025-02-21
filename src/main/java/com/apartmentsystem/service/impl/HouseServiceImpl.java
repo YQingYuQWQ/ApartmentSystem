@@ -1,12 +1,9 @@
 package com.apartmentsystem.service.impl;
 
 import com.apartmentsystem.entity.House;
-import com.apartmentsystem.entity.Result;
 import com.apartmentsystem.mapper.HouseMapper;
 import com.apartmentsystem.service.HouseService;
 import com.apartmentsystem.util.UserHolder;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,57 +18,52 @@ public class HouseServiceImpl implements HouseService {
     private LogServiceImpl logServiceImpl;
 
     @Override
-    public Result insertHouse(House house) {
+    public void insertHouse(House house) {
         House house1 = houseMapper.getHouseByHouseNumber(house.getHouse_number());
         if(house1!=null)
-            return Result.error("房屋已存在");
+            throw new RuntimeException("房屋已存在");
         if(house.getHouse_number()==null||house.getBuilding_name()==null||house.getStatus()==null)
-            return Result.error("输入参数有误");
+            throw new RuntimeException("房屋信息不完整");
 
         logServiceImpl.insertLog(UserHolder.getUser().getId(), "insert house " + "house_number: " +house.getHouse_number()+ " building_name: "+house.getBuilding_name()+" floor: "+house.getFloor());
         houseMapper.insertHouse(house);
-        return Result.success();
     }
 
     @Override
-    public Result updateOwnerByHouseNumber(String house_number, int owner_id) {
+    public void updateOwnerByHouseNumber(String house_number, int owner_id) {
         House house = houseMapper.getHouseByHouseNumber(house_number);
         if(house==null)
-            return Result.error("房屋不存在");
+            throw new RuntimeException("房屋不存在");
         logServiceImpl.insertLog(UserHolder.getUser().getId(), "update house owner" + "house_number: "+house_number+" owner_id: "+owner_id);
         houseMapper.updateOwnerByHouseNumber(house_number, owner_id);
-        return Result.success();
     }
 
     @Override
-    public Result updateStatusByHouseNumber(String house_number, String status) {
+    public void updateStatusByHouseNumber(String house_number, String status) {
         House house = houseMapper.getHouseByHouseNumber(house_number);
         if(house==null)
-            return Result.error("房屋不存在");
+            throw new RuntimeException("房屋不存在");
         if(!Objects.equals(status, "occupied") && !Objects.equals(status, "vacant") && !Objects.equals(status, "under_maintenance"))
-            return Result.error("房屋状态有误");
+            throw new RuntimeException("房屋状态有误");
         logServiceImpl.insertLog(UserHolder.getUser().getId(), "update house status" + "house_number: "+house_number+" status: "+status);
         houseMapper.updateStatusByHouseNumber(house_number, status);
-        return Result.success();
     }
 
     @Override
-    public Result updateStatusByHouseId(int id, String status) {
+    public void updateStatusByHouseId(int id, String status) {
         if(!Objects.equals(status, "occupied") && !Objects.equals(status, "vacant") && !Objects.equals(status, "under_maintenance"))
-            return Result.error("房屋状态有误");
+            throw new RuntimeException("房屋状态有误");
         logServiceImpl.insertLog(UserHolder.getUser().getId(), "update house status" + "id: "+id+" status: "+status);
         houseMapper.updateStatusByHouseId(id, status);
-        return Result.success("修改房屋状态成功");
     }
 
     @Override
-    public Result deleteHouseByHouseNumber(String house_number) {
+    public void deleteHouseByHouseNumber(String house_number) {
         House house = houseMapper.getHouseByHouseNumber(house_number);
         if(house==null)
-            return Result.error("房屋不存在");
+            throw new RuntimeException("房屋不存在");
         logServiceImpl.insertLog(UserHolder.getUser().getId(), "delete house" + "house_number: "+house_number);
         houseMapper.deleteHouseByHouseNumber(house_number);
-        return Result.success();
     }
 
     @Override
@@ -90,8 +82,7 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public Result showHouseList() {
-        List<House> houseList = houseMapper.showHouseList();
-        return Result.success(houseList);
+    public List<House> showHouseList() {
+        return houseMapper.showHouseList();
     }
 }

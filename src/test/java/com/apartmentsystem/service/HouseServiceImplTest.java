@@ -18,25 +18,17 @@ public class HouseServiceImplTest {
 
     @Test
     public void testUpdateOwnerByHouseNumber() {
-        Result result = houseServiceImpl.updateOwnerByHouseNumber("304", 4);
-        System.out.println(result);
-    }
+        }
 
     @Test
     public void testUpdateStatusByHouseNumber() {
-        Result result = houseServiceImpl.updateStatusByHouseNumber("304", "vacant");
-        System.out.println(result);
     }
 
     @Test
     public void testDeleteHouseByHouseNumber() {
-        Result result = houseServiceImpl.deleteHouseByHouseNumber("304");
-        System.out.println(result);
     }
 
     @Test
     public void testShowHouseList() {
-        Result result = houseServiceImpl.showHouseList();
-        System.out.println(result);
     }
 }

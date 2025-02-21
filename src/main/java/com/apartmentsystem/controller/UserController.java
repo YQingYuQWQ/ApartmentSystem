@@ -17,18 +17,18 @@ public class UserController {
     private UserServiceImpl userServiceImpl;
 
     @PostMapping("/register")
-    public Result<Object> register(@RequestBody User user){
+    public Result register(@RequestBody User user){
         userServiceImpl.insertNormalUser(user);
         return Result.success();
     }
 
     @PostMapping("/login")
-    public Result<Object> login(@RequestBody User user) {
+    public Result login(@RequestBody User user) {
         return Result.success(userServiceImpl.login(user));
     }
 
     @PostMapping("/getUserInfo")
-    public Result<Object> getUserInfo() {
+    public Result getUserInfo() {
         return Result.success(userServiceImpl.getUserInfo());
     }
 
