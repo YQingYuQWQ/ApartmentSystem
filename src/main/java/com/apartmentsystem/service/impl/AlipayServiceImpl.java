@@ -1,6 +1,5 @@
 package com.apartmentsystem.service.impl;
 
-import com.apartmentsystem.entity.Result;
 import com.apartmentsystem.service.AlipayService;
 import com.apartmentsystem.util.AlipayUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,16 +29,15 @@ public class AlipayServiceImpl implements AlipayService {
 
         System.out.println("支付宝回调验签成功！");
 
-        // 3. 获取订单信息
-        String outTradeNo = params.get("out_trade_no"); // 订单号
-        String tradeNo = params.get("trade_no"); // 支付宝交易号
+//        String outTradeNo = params.get("out_trade_no"); // 订单号
+//        String tradeNo = params.get("trade_no"); // 支付宝交易号
         String tradeStatus = params.get("trade_status"); // 交易状态
 
-        // 4. 处理订单业务逻辑
         if (!"TRADE_SUCCESS".equals(tradeStatus))
             throw new RuntimeException("支付宝回调交易状态不是TRADE_SUCCESS！");
         String fee_number = params.get("body");
-        feeServiceImpl.updateFeeStatusByFeeNumber(fee_number, true);
+        System.out.println("支付宝回调成功！订单号：" + fee_number);
+        feeServiceImpl.updateFeePaidByFeeNumber(fee_number, true);
     }
 
     /**
@@ -50,10 +48,4 @@ public class AlipayServiceImpl implements AlipayService {
         request.getParameterMap().forEach((key, values) -> params.put(key, values[0]));
         return params;
     }
-
-    @Override
-    public void createOrder(String outTradeNo, String totalAmount, String subject, String body) {
-
-    }
-
 }

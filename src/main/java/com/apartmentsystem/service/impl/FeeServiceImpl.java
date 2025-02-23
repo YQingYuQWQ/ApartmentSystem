@@ -63,7 +63,6 @@ public class FeeServiceImpl implements FeeService{
         houseServiceImpl.updateStatusByHouseNumber(fee.getHouse_number(), "booked");
         logServiceImpl.insertLog(UserHolder.getUser().getId(), "预定房屋" + fee.getHouse_number());
         feeMapper.insertFee(fee);
-        createAliPayOrderForm(fee);
         if (!createAliPayOrderForm(fee))
             throw new RuntimeException("支付宝订单生成失败");
         return fee.getFee_number();
@@ -75,8 +74,8 @@ public class FeeServiceImpl implements FeeService{
     }
 
     @Override
-    public void updateFeeStatusByFeeNumber(String fee_number, boolean status) {
-        feeMapper.updateFeeStatusByFeeNumber(fee_number, status);
+    public void updateFeePaidByFeeNumber(String fee_number, boolean status) {
+        feeMapper.updateFeePaidByFeeNumber(fee_number, status);
         switch (feeMapper.getFeeByFeeNumber(fee_number).getType()){
             case "deposit":
                 houseServiceImpl.updateStatusByHouseNumber(feeMapper.getFeeByFeeNumber(fee_number).getHouse_number(), "occupied");
@@ -106,12 +105,12 @@ public class FeeServiceImpl implements FeeService{
         AlipayClient alipayClient = new DefaultAlipayClient(alipayConfig);
         AlipayTradePrecreateRequest request = new AlipayTradePrecreateRequest();
         request.setNotifyUrl(alipayProperties.getNotifyUrl());
+        System.out.println(alipayProperties.getNotifyUrl());
         AlipayTradePrecreateModel model = new AlipayTradePrecreateModel();
         request.setBizModel(model);
         model.setOutTradeNo(fee.getFee_number());
         model.setTotalAmount(fee.getAmount().toString());
-        String feeType = fee.getType();
-        switch (feeType) {
+        switch (fee.getType()) {
             case "rent":
                 model.setSubject("公寓管理系统-缴费-房租");
                 break;
@@ -137,7 +136,9 @@ public class FeeServiceImpl implements FeeService{
         model.setTimeExpire(DateFormatUtil.formatDate(fee.getDue_date()));
         model.setBody(fee.getFee_number());
         AlipayTradePrecreateResponse response = alipayClient.execute(request);
-        QrCodeUtil.generate(response.getQrCode(), 500, 500, FileUtil.file("E:/QrCode/"+ fee.getFee_number() +".jpg"));
+        QrCodeUtil.generate(response.getQrCode(), 500, 500, FileUtil.file("E:\\Fork\\ApartmentSystem\\src\\assets\\qrcode\\"+ fee.getFee_number() +".jpg"));
         return true;
     }
+
+    
 }

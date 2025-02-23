@@ -22,7 +22,7 @@ public class AlipayUtil {
         try {
             return AlipaySignature.rsaCheckV1(params, ALIPAY_PUBLIC_KEY, CHARSET, SIGN_TYPE);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("支付宝回调签名验证失败");
             return false;
         }
     }

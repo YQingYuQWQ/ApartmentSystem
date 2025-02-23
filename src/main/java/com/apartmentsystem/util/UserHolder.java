@@ -12,7 +12,7 @@ public class UserHolder {
     public static User getUser() {
         User user = userThreadLocal.get();
         if (user == null) {
-            throw new NullPointerException("未获取到线程中的用户.");
+            throw new NullPointerException("userholder:未获取到线程中的用户.");
         }
         return user;
     }

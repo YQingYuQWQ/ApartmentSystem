@@ -43,9 +43,9 @@ public class HouseServiceImpl implements HouseService {
         House house = houseMapper.getHouseByHouseNumber(house_number);
         if(house==null)
             throw new RuntimeException("房屋不存在");
-        if(!Objects.equals(status, "occupied") && !Objects.equals(status, "vacant") && !Objects.equals(status, "under_maintenance"))
+        if(!Objects.equals(status, "occupied") && !Objects.equals(status, "vacant") && !Objects.equals(status, "under_maintenance") && !Objects.equals(status, "booked"))
             throw new RuntimeException("房屋状态有误");
-        logServiceImpl.insertLog(UserHolder.getUser().getId(), "update house status" + "house_number: "+house_number+" status: "+status);
+//        logServiceImpl.insertLog(UserHolder.getUser().getId(), "update house status" + "house_number: "+house_number+" status: "+status);
         houseMapper.updateStatusByHouseNumber(house_number, status);
     }
 

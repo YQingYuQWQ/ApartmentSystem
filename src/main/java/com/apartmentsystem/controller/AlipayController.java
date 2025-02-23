@@ -20,9 +20,7 @@ public class AlipayController {
     @PostMapping("/notify")
     public Result alipayNotify(HttpServletRequest request) {
         System.out.println("支付宝支付成功回调");
-        System.out.println("支付宝支付成功回调");
-        System.out.println("支付宝支付成功回调");
-        System.out.println("支付宝支付成功回调");
+        alipayServiceImpl.handleAlipayCallback(request);
         return Result.success();
     }
 }

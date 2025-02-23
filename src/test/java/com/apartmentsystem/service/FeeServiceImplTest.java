@@ -3,6 +3,7 @@ package com.apartmentsystem.service;
 import com.alipay.api.AlipayApiException;
 import com.apartmentsystem.entity.Fee;
 import com.apartmentsystem.service.impl.FeeServiceImpl;
+import com.apartmentsystem.util.OrderNumberUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,5 +24,20 @@ public class FeeServiceImplTest {
         feeServiceImpl.insertFee(fee);
     }
 
+    @Test
+    public void testInsertDepositFee() throws AlipayApiException {
+        Fee fee = new Fee();
+        fee.setHouse_number("201");
+        feeServiceImpl.insertdepositFee(fee);
+    }
 
+    @Test
+    public void testCreateAliPayOrderForm() throws AlipayApiException {
+        Fee fee = new Fee();
+        fee.setFee_number(OrderNumberUtil.generateOrderNumber("Fee"));
+        fee.setHouse_number("101");
+        fee.setType("deposit");
+        fee.setAmount(BigDecimal.valueOf(500));
+        feeServiceImpl.createAliPayOrderForm(fee);
+    }
 }

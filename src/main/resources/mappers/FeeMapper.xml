@@ -9,7 +9,7 @@
     <update id="updateFeePaidById">
         UPDATE fee SET paid = true, updated_at = NOW() WHERE id = #{id}
     </update>
-    <update id="updateFeeStatusByFeeNumber">
+    <update id="updateFeePaidByFeeNumber">
         UPDATE fee SET paid = true, updated_at = NOW() WHERE fee_number = #{fee_number}
     </update>
     <select id="getFeeById" resultType="com.apartmentsystem.entity.Fee">
