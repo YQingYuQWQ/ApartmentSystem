@@ -92,18 +92,16 @@
                 </el-card>
             </div>
         </div>
-        <AlipayVue />
     </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import router from '@/router/index'
 import { useRoute } from 'vue-router'
 import api from '@/config/axios'
 import { User, Unlock, Connection, Sunny, Document, KnifeFork, Basketball, Watermelon } from '@element-plus/icons-vue'
-import AlipayVue from '@/components/Alipay.vue'
 
 
 const route = useRoute()
@@ -121,8 +119,7 @@ const facilityIcons = {
 }
 
 const roomData = ref({})
-const qrCode = ref('')
-const showDialog = ref(false)
+const alipayFrame = ref('')
 const pageloading = ref(true)
 const loading = ref(false)
 const statusType = {
@@ -139,12 +136,6 @@ const statusText = {
 const bookingButtonText = computed(() => {
     return roomData.value.status === 'vacant' ? '立即预订' : statusText[roomData.value.status]
 })
-
-const getQRCodeImage = () => {
-    // 使用 require.context 动态加载图片
-    const images = require.context('@/assets/qrcode', false, /\.jpg$/);
-    return images(`./${qrCode}.jpg`);
-}
 
 // 预订处理
 const handleBooking = async () => {
@@ -167,16 +158,30 @@ const handleBooking = async () => {
                 ElMessage.warning('请求验证错误:' + response.data.message)
                 return;
             }
-            qrCode.value = response.data.data;
+            alipayFrame.value = response.data.data;
             loading.value = false
-            ElMessage.info('预定成功，请及时支付！')
+            ElMessage.success('预定成功，正在跳转支付宝支付页面，请及时支付！')
 
-            showDialog.value = true
+            const formHtml = response.data.data;
+
+            const formElement = document.createElement('div');
+            formElement.innerHTML = formHtml;
+            document.body.appendChild(formElement);
+
+            nextTick(() => {
+                const form = formElement.querySelector('form');
+                if (form) {
+                    form.submit();
+                } else {
+                    console.error('没有找到表单元素');
+                }
+            });
+
         }).catch(error)(
             console.log('下单错误：' + error)
         )
     } catch (error) {
-        ElMessage.info('已取消预订')
+        console.log(error)
     }
 }
 
