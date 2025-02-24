@@ -177,6 +177,7 @@ import router from '@/router/index'
 import api from '@/config/axios'
 import { House, Money, Bell, Tools, Document, Clock, Memo} from '@element-plus/icons-vue'
 
+const token = ref('')
 const userInfo = ref({})
 const paymentForm = ref({})
 
@@ -236,17 +237,19 @@ const handleClose = () => {
 
 onMounted(async () => {
     try {
-        // 请求用户信息
+        token.value = localStorage.getItem('token');
+        if(token.value === null){
+            router.push('/')
+            ElMessage.error('您还未登录！');
+        }
         const response1 = await api.post('user/getUserInfo');
         if (response1.data.code !== 0) {
             router.push('/login');
             ElMessage.error('token过期请重新登录！');
         }
 
-        // 更新用户信息
         userInfo.value = response1.data.data;
 
-        // 查询用户合同
         const response2 = await api.post('leaseContract/getActiveLeaseContractByUserId', {
             user_id: userInfo.value.id
         });

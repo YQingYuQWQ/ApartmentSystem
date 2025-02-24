@@ -86,10 +86,14 @@ const handleLogin = async () => {
     if (valid) {
       loading.value = true
 
-      api.post(`user/login?`, {
+      api.post('user/login', JSON.stringify({
         username: loginForm.username,
         password: loginForm.password,
         role: loginForm.role
+      }), {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       })
         .then(response => {
           loading.value = false

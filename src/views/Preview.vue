@@ -108,6 +108,7 @@ const handleBook = (house) => {
   if (token.value === null) {
     ElMessage.info('请登录后进行预订操作')
     router.push('/login')
+    return;
   }
   router.push({
     path: '/houseinfo',
@@ -144,6 +145,7 @@ onMounted(() => {
       });
     })
     .catch(error => {
+      ElMessage.error('获取房屋列表失败！')
       console.error('Error fetching house data:', error);
     });
 
@@ -163,6 +165,7 @@ onMounted(() => {
           localStorage.removeItem('token');
           router.replace();
         } else {
+          ElMessage.error('token验证错误！')
           console.log('其他错误:', error);
         }
       });

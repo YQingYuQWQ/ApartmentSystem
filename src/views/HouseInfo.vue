@@ -4,7 +4,7 @@
         <div class="carousel-section">
             <el-carousel :interval="5000" height="500px" indicator-position="outside">
                 <el-carousel-item v-for="(img, index) in roomData.images" :key="index">
-                    <el-image :src="img" fit="cover" class="carousel-image" :preview-src-list="roomData.images"/>
+                    <el-image :src="img" fit="cover" class="carousel-image" :preview-src-list="roomData.images" />
                 </el-carousel-item>
             </el-carousel>
             <el-tag class="status-tag" :type="statusType[roomData.status]" effect="dark">
@@ -92,6 +92,7 @@
                 </el-card>
             </div>
         </div>
+        <AlipayVue />
     </div>
 </template>
 
@@ -100,10 +101,14 @@ import { ref, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import router from '@/router/index'
 import { useRoute } from 'vue-router'
+import api from '@/config/axios'
 import { User, Unlock, Connection, Sunny, Document, KnifeFork, Basketball, Watermelon } from '@element-plus/icons-vue'
+import AlipayVue from '@/components/Alipay.vue'
 
 
 const route = useRoute()
+const token = ref('')
+
 const facilityIcons = {
     '独立卫浴': User,
     '智能门锁': Unlock,
@@ -116,6 +121,8 @@ const facilityIcons = {
 }
 
 const roomData = ref({})
+const qrCode = ref('')
+const showDialog = ref(false)
 const pageloading = ref(true)
 const loading = ref(false)
 const statusType = {
@@ -133,6 +140,12 @@ const bookingButtonText = computed(() => {
     return roomData.value.status === 'vacant' ? '立即预订' : statusText[roomData.value.status]
 })
 
+const getQRCodeImage = () => {
+    // 使用 require.context 动态加载图片
+    const images = require.context('@/assets/qrcode', false, /\.jpg$/);
+    return images(`./${qrCode}.jpg`);
+}
+
 // 预订处理
 const handleBooking = async () => {
     try {
@@ -147,18 +160,32 @@ const handleBooking = async () => {
         )
 
         loading.value = true
-        // 模拟API调用
-        setTimeout(() => {
+        await api.post('fee/createDepositFee', {
+            house_number: roomData.value.house_number
+        }).then(response => {
+            if (response.data.code != 0) {
+                ElMessage.warning('请求验证错误:' + response.data.message)
+                return;
+            }
+            qrCode.value = response.data.data;
             loading.value = false
-            ElMessage.success('预订成功！请前往个人中心完成签约')
-            // 这里添加实际预订逻辑
-        }, 1500)
+            ElMessage.info('预定成功，请及时支付！')
+
+            showDialog.value = true
+        }).catch(error)(
+            console.log('下单错误：' + error)
+        )
     } catch (error) {
         ElMessage.info('已取消预订')
     }
 }
 
 onMounted(() => {
+    token.value = localStorage.getItem('token')
+    if (token === null) {
+        ElMessage.info('请先登录！')
+        router.push('/')
+    }
     roomData.value = {
         id: route.query.id,
         house_number: route.query.house_number,
@@ -170,6 +197,7 @@ onMounted(() => {
         images: JSON.parse(route.query.images),
         facilities: ['独立卫浴', '智能门锁', '高速WiFi', '空调', '书桌椅']
     }
+
 
     pageloading.value = false
 })
