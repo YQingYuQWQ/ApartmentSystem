@@ -16,7 +16,7 @@
         <el-row :gutter="20" class="function-cards">
             <el-col :xs="24" :sm="12" :md="6">
                 <!-- 预定公寓 -->
-                <el-card class="card-item" @click="goToHome" v-if="showcard">
+                <el-card class="card-item" @click="goToHome" v-if="showcard === null">
                     <div class="card-content">
                         <el-icon :size="40" color="#409EFF">
                             <House />
@@ -26,8 +26,17 @@
                     </div>
                 </el-card>
 
-                <!-- 查看合同 -->
-                <el-card class="card-item" @click="goToBooking" v-else>
+                <el-card class="card-item" @click="goToBooking" v-else-if="status === 'waiting'">
+                    <div class="card-content">
+                        <el-icon :size="40" color="#409EFF">
+                            <House />
+                        </el-icon>
+                        <h3>待入住</h3>
+                        <p>您的公寓已预定，等待入住</p>
+                    </div>
+                </el-card>
+
+                <el-card class="card-item" @click="goToContract" v-else-if="status === 'contract'">
                     <div class="card-content">
                         <el-icon :size="40" color="#409EFF">
                             <Memo />
@@ -39,8 +48,8 @@
             </el-col>
 
             <!-- 在线缴费 -->
-            <el-col :xs="24" :sm="12" :md="6" >
-                <el-card class="card-item" @click="goToPayment" >
+            <el-col :xs="24" :sm="12" :md="6">
+                <el-card class="card-item" @click="goToPayment">
                     <div class="card-content">
                         <el-icon :size="40" color="#67C23A">
                             <Money />
@@ -140,33 +149,28 @@
         </el-row>
     </div>
     <!-- 抽屉 -->
-    <el-drawer
-      title="缴费"
-      size="400px"
-      v-model="drawerVisible"
-      :before-close="handleClose"
-    >
-      <el-form :model="paymentForm" ref="paymentFormRef">
-        <!-- 缴费类型 -->
-        <el-form-item label="缴费类型" prop="paymentType">
-          <el-select v-model="paymentForm.paymentType" placeholder="请选择缴费类型">
-            <el-option label="水费" value="water"></el-option>
-            <el-option label="电费" value="electricity"></el-option>
-            <el-option label="物业费" value="property"></el-option>
-          </el-select>
-        </el-form-item>
+    <el-drawer title="缴费" size="400px" v-model="drawerVisible" :before-close="handleClose">
+        <el-form :model="paymentForm" ref="paymentFormRef">
+            <!-- 缴费类型 -->
+            <el-form-item label="缴费类型" prop="paymentType">
+                <el-select v-model="paymentForm.paymentType" placeholder="请选择缴费类型">
+                    <el-option label="水费" value="water"></el-option>
+                    <el-option label="电费" value="electricity"></el-option>
+                    <el-option label="物业费" value="property"></el-option>
+                </el-select>
+            </el-form-item>
 
-        <!-- 缴费金额 -->
-        <el-form-item label="缴费金额" prop="amount">
-          <el-input v-model="paymentForm.amount" placeholder="请输入金额" />
-        </el-form-item>
+            <!-- 缴费金额 -->
+            <el-form-item label="缴费金额" prop="amount">
+                <el-input v-model="paymentForm.amount" placeholder="请输入金额" />
+            </el-form-item>
 
-        <!-- 确认和取消按钮 -->
-        <div class="drawer-footer">
-          <el-button @click="closeDrawer">取消</el-button>
-          <el-button type="primary" @click="handlePayment">确认缴费</el-button>
-        </div>
-      </el-form>
+            <!-- 确认和取消按钮 -->
+            <div class="drawer-footer">
+                <el-button @click="closeDrawer">取消</el-button>
+                <el-button type="primary" @click="handlePayment">确认缴费</el-button>
+            </div>
+        </el-form>
     </el-drawer>
 </template>
 
@@ -175,14 +179,14 @@ import { ref, onMounted } from 'vue'
 import { ElMessage, ElLoading, ElMessageBox } from 'element-plus'
 import router from '@/router/index'
 import api from '@/config/axios'
-import { House, Money, Bell, Tools, Document, Clock, Memo} from '@element-plus/icons-vue'
+import { House, Money, Bell, Tools, Document, Clock, Memo } from '@element-plus/icons-vue'
 
 const token = ref('')
 const userInfo = ref({})
 const paymentForm = ref({})
 
-const showcard = ref(true)
-const loading = ref(true) 
+const showcard = ref(null)
+const loading = ref(true)
 const drawerVisible = ref(false)
 
 const recentBills = ref([
@@ -216,7 +220,7 @@ const goToHome = () => router.push('/')
 const goToNotice = () => router.push('/notice')
 const goToRepair = () => router.push('/repair')
 const goToPayment = () => {
-    if(!showcard){
+    if (!showcard) {
         ElMessage.warning('您还未租房！')
         return;
     }
@@ -224,40 +228,46 @@ const goToPayment = () => {
     console.log('1')
 }
 const closeDrawer = () => {
-  drawerVisible.value = false
-  paymentForm.value = {}
+    drawerVisible.value = false
+    paymentForm.value = {}
 }
 const handleClose = () => {
-  ElMessageBox.confirm('确定关闭缴费吗?')
-    .then(() => {
-        closeDrawer();
-    })
+    ElMessageBox.confirm('确定关闭缴费吗?')
+        .then(() => {
+            closeDrawer();
+        })
 }
 
 
 onMounted(async () => {
     try {
+        //获取用户信息
         token.value = localStorage.getItem('token');
-        if(token.value === null){
+        if (token.value === null) {
             router.push('/')
             ElMessage.error('您还未登录！');
         }
-        const response1 = await api.post('user/getUserInfo');
-        if (response1.data.code !== 0) {
+        const user = await api.post('user/getUserInfo');
+        if (user.data.code !== 0) {
             router.push('/login');
             ElMessage.error('token过期请重新登录！');
         }
+        userInfo.value = user.data.data;
 
-        userInfo.value = response1.data.data;
-
-        const response2 = await api.post('leaseContract/getActiveLeaseContractByUserId', {
+        //获取用户合同
+        const leaseContract = await api.post('leaseContract/getActiveLeaseContractByUserId', {
             user_id: userInfo.value.id
         });
-
-        if (response2.data.data != null) {
-            showcard.value = false;
-            console.log('用户已有租约');
+        if (leaseContract.data.data != null) {
+            showcard.value = 'contract';
         }
+
+        // //获取用户待入住订单
+        // const waitingOrder = await api.post('house/getByOwnerId')
+        // console.log(waitingOrder.data.data)
+        // if (waitingOrder.data.data != null){
+        //     showcard.value = 'waiting';
+        // }
 
     } catch (error) {
         console.error('请求出错:', error);
