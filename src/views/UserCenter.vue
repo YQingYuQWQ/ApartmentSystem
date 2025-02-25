@@ -16,7 +16,7 @@
         <el-row :gutter="20" class="function-cards">
             <el-col :xs="24" :sm="12" :md="6">
                 <!-- 预定公寓 -->
-                <el-card class="card-item" @click="goToHome" v-if="showcard === null">
+                <el-card class="card-item" @click="goToHome" v-if="showcard === ''">
                     <div class="card-content">
                         <el-icon :size="40" color="#409EFF">
                             <House />
@@ -26,25 +26,25 @@
                     </div>
                 </el-card>
 
-                <el-card class="card-item" @click="goToBooking" v-else-if="status === 'waiting'">
+                <el-card class="card-item" @click="goToHome" v-else-if="showcard === 'waiting'">
                     <div class="card-content">
                         <el-icon :size="40" color="#409EFF">
                             <House />
                         </el-icon>
                         <h3>待入住</h3>
-                        <p>您的公寓已预定，等待入住</p>
+                        <p>已预定，请前往公寓签署合同</p>
                     </div>
                 </el-card>
 
-                <el-card class="card-item" @click="goToContract" v-else-if="status === 'contract'">
+                <!-- <el-card class="card-item" @click="goToContract" v-else-if="showcard === 'occupied'">
                     <div class="card-content">
                         <el-icon :size="40" color="#409EFF">
                             <Memo />
                         </el-icon>
-                        <h3>查看租约</h3>
-                        <p>查看租约以及合同内容</p>
+                        <h3>查看明细</h3>
+                        <p>查看房屋明细以及合同内容</p>
                     </div>
-                </el-card>
+                </el-card> -->
             </el-col>
 
             <!-- 在线缴费 -->
@@ -101,19 +101,19 @@
                         </div>
                     </template>
                     <el-table :data="recentBills" style="width: 100%">
-                        <el-table-column prop="date" label="日期" width="120" />
+                        <el-table-column prop="created_at" label="日期" width="240" />
                         <el-table-column prop="type" label="类型" width="120">
                             <template #default="{ row }">
-                                <el-tag :type="row.type === '水费' ? '' : 'warning'">
-                                    {{ row.type }}
+                                <el-tag :type="getTypeTag(row.type)" size="small">
+                                    {{ getTypeLabel(row.type) }}
                                 </el-tag>
                             </template>
                         </el-table-column>
                         <el-table-column prop="amount" label="金额" />
-                        <el-table-column prop="status" label="状态">
+                        <el-table-column prop="paid" label="状态">
                             <template #default="{ row }">
-                                <el-text :type="row.status === '已支付' ? 'success' : 'danger'">
-                                    {{ row.status }}
+                                <el-text :type="row.paid === true ? 'success' : 'danger'">
+                                    {{ row.paid === true ? '已支付' : '待支付' }}
                                 </el-text>
                             </template>
                         </el-table-column>
@@ -179,21 +179,56 @@ import { ref, onMounted } from 'vue'
 import { ElMessage, ElLoading, ElMessageBox } from 'element-plus'
 import router from '@/router/index'
 import api from '@/config/axios'
+import dayjs from 'dayjs'
 import { House, Money, Bell, Tools, Document, Clock, Memo } from '@element-plus/icons-vue'
 
 const token = ref('')
 const userInfo = ref({})
 const paymentForm = ref({})
 
-const showcard = ref(null)
+const house = ref({})
+const showcard = ref('')
 const loading = ref(true)
 const drawerVisible = ref(false)
 
-const recentBills = ref([
-    { date: '2024-03-15', type: '水费', amount: '¥156.00', status: '已支付' },
-    { date: '2024-03-18', type: '电费', amount: '¥89.50', status: '待支付' },
-    { date: '2024-03-20', type: '物业费', amount: '¥320.00', status: '待支付' }
-])
+const recentBills = ref([])
+const getTypeTag = (type) => {
+    switch (type) {
+        case 'water':
+            return 'primary';
+        case 'power':
+            return 'success';
+        case 'maintenance':
+            return 'warning';
+        case 'rent':
+            return 'info';
+        case 'utilities':
+            return 'danger';
+        case 'deposit':
+            return 'success';
+        default:
+            return 'default';
+    }
+};
+const getTypeLabel = (type) => {
+    switch (type) {
+        case 'water':
+            return '水费';
+        case 'power':
+            return '电费';
+        case 'maintenance':
+            return '维修费';
+        case 'rent':
+            return '租金';
+        case 'utilities':
+            return '物业费';
+        case 'deposit':
+            return '押金';
+        default:
+            return type;
+    }
+};
+
 
 const repairProgress = ref([
     {
@@ -254,20 +289,28 @@ onMounted(async () => {
         }
         userInfo.value = user.data.data;
 
-        //获取用户合同
-        const leaseContract = await api.post('leaseContract/getActiveLeaseContractByUserId', {
-            user_id: userInfo.value.id
-        });
-        if (leaseContract.data.data != null) {
-            showcard.value = 'contract';
+        // //获取用户合同
+        // const leaseContract = await api.post('leaseContract/getActiveLeaseContractByUserId', {
+        //     user_id: userInfo.value.id
+        // });
+        // if (leaseContract.data.data != null) {
+        //     showcard.value = 'contract';
+        // }
+
+        //获取用户房屋信息
+        const waitingOrder = await api.post('house/getByOwnerId');
+        if (waitingOrder.data.data != null) {
+            house.value = waitingOrder.data.data
+            showcard.value = waitingOrder.data.data.status;
         }
 
-        // //获取用户待入住订单
-        // const waitingOrder = await api.post('house/getByOwnerId')
-        // console.log(waitingOrder.data.data)
-        // if (waitingOrder.data.data != null){
-        //     showcard.value = 'waiting';
-        // }
+        //获取订单信息
+        const FeeList = await api.post('fee/getByUserId');
+        recentBills.value = FeeList.data.data;
+        recentBills.value.forEach(item => {
+            item.created_at = dayjs(item.created_at).format('YYYY-MM-DD HH:mm:ss');
+            item.due_date = dayjs(item.due_date).format('YYYY-MM-DD');
+        });
 
     } catch (error) {
         console.error('请求出错:', error);
