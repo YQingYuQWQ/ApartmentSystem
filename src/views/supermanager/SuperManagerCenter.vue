@@ -16,9 +16,7 @@
       </div>
     </header>
 
-    <!-- 主内容 -->
     <main class="main-content">
-      <!-- 操作栏 -->
       <div class="action-bar">
         <el-input
           v-model="searchKey"
@@ -37,7 +35,6 @@
         </el-button>
       </div>
 
-      <!-- 用户表格 -->
       <el-table :data="paginatedData" v-loading="loading" style="width: 100%">
         <el-table-column prop="id" label="ID" width="80" />
         
@@ -85,7 +82,6 @@
         </el-table-column>
       </el-table>
 
-      <!-- 分页 -->
       <div class="pagination">
         <el-pagination
           v-model:current-page="currentPage"
@@ -96,7 +92,6 @@
       </div>
     </main>
 
-    <!-- 用户对话框 -->
     <el-dialog
       v-model="dialogVisible"
       :title="dialogType === 'create' ? '新建用户' : '编辑用户'"
@@ -195,18 +190,15 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import dayjs from 'dayjs'
 import api from '@/config/axios'
 
-// 暗黑模式
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
 
-// 用户数据
 const users = ref([])
 const loading = ref(true)
 const searchKey = ref('')
 const currentPage = ref(1)
 const pageSize = 10
 
-// 角色配置
 const roleMap = {
   0: '超级管理员',
   1: '普通用户',
@@ -219,10 +211,8 @@ const roleTagType = {
   2: 'warning'
 }
 
-// 表单引用
 const formRef = ref(null)
 
-// 表单验证规则
 const formRules = {
   username: [
     { required: true, message: '请输入用户名', trigger: 'blur' },
@@ -258,12 +248,10 @@ const formRules = {
   ]
 }
 
-// 对话框状态
 const dialogVisible = ref(false)
 const dialogType = ref('create')
 const formData = ref(getInitialFormData())
 
-// 初始化表单数据
 function getInitialFormData() {
   return {
     username: '',
@@ -276,12 +264,10 @@ function getInitialFormData() {
   }
 }
 
-// 时间格式化
 const formatTime = (time) => {
   return dayjs(time).format('YYYY-MM-DD HH:mm')
 }
 
-// 用户操作
 const showCreateDialog = () => {
   dialogType.value = 'create'
   formData.value = getInitialFormData()
@@ -312,13 +298,11 @@ const deleteUser = async (user) => {
   }
 }
 
-// 提交表单
 const submitForm = async () => {
   try {
     await formRef.value.validate()
     
     if (dialogType.value === 'create') {
-      // 模拟创建用户
       const newUser = {
         ...formData.value,
         id: users.value.length + 1,
@@ -328,7 +312,6 @@ const submitForm = async () => {
       }
       users.value = [newUser, ...users.value]
     } else {
-      // 模拟更新用户
       const index = users.value.findIndex(u => u.id === formData.value.id)
       users.value[index] = {
         ...users.value[index],
@@ -344,7 +327,6 @@ const submitForm = async () => {
   }
 }
 
-// 初始化数据
 onMounted(async () => {
     const userinfo = await api.get('user/getAllUser')
     if(userinfo.data.code != '0'){
@@ -355,7 +337,6 @@ onMounted(async () => {
     loading.value = false
 })
 
-// 计算属性
 const filteredUsers = computed(() => 
   users.value.filter(user => 
     Object.values(user).some(value => 
