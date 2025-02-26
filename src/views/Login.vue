@@ -2,33 +2,15 @@
   <div class="login-container">
     <div class="login-box">
       <h1 class="title">智慧社区管理平台</h1>
-      <el-form 
-        :model="loginForm" 
-        :rules="rules" 
-        ref="loginFormRef"
-        class="login-form"
-        @submit.prevent="handleLogin"
-      >
+      <el-form :model="loginForm" :rules="rules" ref="loginFormRef" class="login-form" @submit.prevent="handleLogin">
         <el-form-item prop="username">
-          <el-input
-            v-model="loginForm.username"
-            placeholder="请输入用户名"
-            prefix-icon="User"
-            size="large"
-            class="custom-input"
-          />
+          <el-input v-model="loginForm.username" placeholder="请输入用户名" prefix-icon="User" size="large"
+            class="custom-input" />
         </el-form-item>
 
         <el-form-item prop="password">
-          <el-input
-            v-model="loginForm.password"
-            type="password"
-            placeholder="请输入密码"
-            prefix-icon="Lock"
-            size="large"
-            show-password
-            class="custom-input"
-          />
+          <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" prefix-icon="Lock" size="large"
+            show-password class="custom-input" />
         </el-form-item>
 
         <el-form-item prop="role">
@@ -39,13 +21,7 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-button
-          type="primary"
-          size="large"
-          class="login-btn"
-          native-type="submit"
-          :loading="loading"
-        >
+        <el-button type="primary" size="large" class="login-btn" native-type="submit" :loading="loading">
           立即登录
         </el-button>
         <el-link type="primary" @click="goToHome">返回首页</el-link>
@@ -100,7 +76,17 @@ const handleLogin = async () => {
           if (response.data.code === 0) {
             localStorage.setItem('token', response.data.data)
             ElMessage.success('登录成功')
-            router.push('/')
+            switch (loginForm.role) {
+              case '1':
+                router.push('/')
+                break;
+              case '0':
+                router.push('/supermanagercenter')
+                break;
+              case '2':
+                router.push('/managercenter')
+                break;
+            }
           } else {
             ElMessage.error(response.data.message || '登录失败')
           }
@@ -210,7 +196,7 @@ const goToHome = () => {
     border-radius: 8px;
     padding: 0 15px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    
+
     &.is-focus {
       box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
     }

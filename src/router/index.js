@@ -10,6 +10,8 @@ import HouseManage from '@/views/manager/HouseManage.vue'
 import ContractManage from '@/views/manager/ContractManage.vue'
 import AnnouncementManage from '@/views/manager/AnnouncementManage.vue'
 import RepairManage from '@/views/manager/RepairManage.vue'
+import SuperManagerCenter from '@/views/supermanager/SuperManagerCenter.vue'
+
 
 const routes = [
   {
@@ -69,6 +71,11 @@ const routes = [
         component: RepairManage
       }
     ]
+  },
+  {
+    path: '/supermanagercenter',
+    name: '超级管理员中心',
+    component: SuperManagerCenter,
   }
 ]
 

@@ -3,6 +3,7 @@ import axios from 'axios';
 const api = axios.create({
   baseURL: 'http://ddns.myredstone.top:23333/',
   timeout: 50000,
+  withCredentials: false
 });
 
 api.interceptors.request.use(
