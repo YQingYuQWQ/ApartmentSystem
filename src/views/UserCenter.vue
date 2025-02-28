@@ -148,28 +148,70 @@
             </el-col>
         </el-row>
     </div>
-    <!-- 抽屉 -->
-    <el-drawer title="缴费" size="400px" v-model="drawerVisible" :before-close="handleClose">
-        <el-form :model="paymentForm" ref="paymentFormRef">
+    <!-- 缴费抽屉 -->
+    <el-drawer 
+        title="缴费管理" 
+        size="400px" 
+        v-model="drawerVisible" 
+        :before-close="handleClose"
+        class="payment-drawer"
+    >
+        <el-form 
+            :model="paymentForm" 
+            ref="paymentFormRef" 
+            label-position="top"
+            label-width="120px"
+            class="payment-form"
+        >
             <!-- 缴费类型 -->
-            <el-form-item label="缴费类型" prop="paymentType">
-                <el-select v-model="paymentForm.paymentType" placeholder="请选择缴费类型">
-                    <el-option label="水费" value="water"></el-option>
-                    <el-option label="电费" value="electricity"></el-option>
-                    <el-option label="物业费" value="property"></el-option>
+            <el-form-item 
+                label="缴费类型" 
+                prop="paymentType"
+                :rules="[{ required: true, message: '请选择缴费类型', trigger: 'change' }]"
+            >
+                <el-select 
+                    v-model="paymentForm.paymentType" 
+                    placeholder="请选择缴费类型"
+                    class="full-width-select"
+                >
+                    <el-option label="水费" value="water" />
+                    <el-option label="电费" value="electricity" />
+                    <el-option label="物业费" value="property" />
                 </el-select>
             </el-form-item>
 
             <!-- 缴费金额 -->
-            <el-form-item label="缴费金额" prop="amount">
-                <el-input v-model="paymentForm.amount" placeholder="请输入金额" />
+            <el-form-item 
+                label="缴费金额（元）" 
+                prop="amount"
+                :rules="[
+                    { required: true, message: '请输入金额', trigger: 'blur' },
+                    { pattern: /^\d+(\.\d{1,2})?$/, message: '请输入有效金额格式', trigger: 'blur' }
+                ]"
+            >
+                <el-input 
+                    v-model="paymentForm.amount" 
+                    placeholder="0.00"
+                    type="number"
+                    step="0.01"
+                    class="amount-input"
+                >
+                    <template #prefix>¥</template>
+                </el-input>
             </el-form-item>
 
-            <!-- 确认和取消按钮 -->
-            <div class="drawer-footer">
-                <el-button @click="closeDrawer">取消</el-button>
-                <el-button type="primary" @click="handlePayment">确认缴费</el-button>
-            </div>
+            <!-- 操作按钮 -->
+            <el-form-item class="form-actions">
+                <el-button @click="closeDrawer" size="medium">取消</el-button>
+                <el-button 
+                    type="primary" 
+                    size="medium"
+                    @click="handlePayment"
+                    :loading="paymentLoading"
+                >
+                    立即支付
+                </el-button>
+            </el-form-item>
         </el-form>
     </el-drawer>
 </template>
@@ -418,4 +460,34 @@ onMounted(async () => {
         }
     }
 }
+
+.payment-drawer {
+        padding: 20px;
+    }
+    
+    .payment-form {
+        padding: 0 24px;
+    }
+    
+    .full-width-select {
+        width: 100%;
+    }
+    
+    .amount-input {
+        width: 100%;
+    }
+    
+    .amount-input :deep(.el-input__prefix) {
+        display: flex;
+        align-items: center;
+        padding-left: 8px;
+        color: #606266;
+    }
+    
+    .form-actions {
+        margin-top: 32px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
 </style>

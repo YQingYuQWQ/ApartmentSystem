@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://ddns.myredstone.top:23333/',
+  //baseURL: 'http://ddns.myredstone.top:23333/',
+  baseURL: 'http://localhost:8080/',
   timeout: 50000,
   withCredentials: false
 });
