@@ -15,6 +15,10 @@
             <el-icon><DataLine /></el-icon>
             <span>数据看板</span>
           </el-menu-item>
+          <el-menu-item index="/managercenter/feemanage">
+            <el-icon><Tickets /></el-icon>
+            <span>订单管理</span>
+          </el-menu-item>
           <el-menu-item index="/managercenter/housemanage">
             <el-icon><OfficeBuilding /></el-icon>
             <span>房屋管理</span>
@@ -60,24 +64,23 @@
           </div>
         </header>
   
-        <!-- 路由视图 -->
         <router-view class="content-area" />
       </div>
     </div>
   </template>
   
   <script setup>
-  import { ref, computed } from 'vue'
+  import { ref, computed, onMounted } from 'vue'
   import { useRoute } from 'vue-router'
   import router from '@/router/index'
-  import { OfficeBuilding, DataLine, Bell, Tools, Document } from '@element-plus/icons-vue'
+  import { OfficeBuilding, DataLine, Bell, Tools, Document, Tickets } from '@element-plus/icons-vue'
+  import { ElMessage } from 'element-plus'
+  import api from '@/config/axios'
   
   const route = useRoute()
-  
-  const user = ref({
-    name: '物业管理员',
-    avatar: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
-  })
+  const userinfo = ref()
+
+  const user = ref({})
   
   const currentRouteName = computed(() => {
     return route.name
@@ -86,6 +89,22 @@
   const logout = () => {
     router.push('/login')
   }
+
+  onMounted(async () => {
+    const userinfos = await api.post('user/getUserInfo')
+    if(userinfos.data.code != '0'){
+      ElMessage.error(userinfo.data.message)
+      return;
+    }
+    userinfo.value = userinfos.data.data
+    if(userinfo.value.role === 1){
+      ElMessage.warning('角色身份不匹配,正在重定向至用户中心')
+      router.push('/usercenter')
+      return;
+    }
+    user.value.name = userinfo.value.nick_name;
+    user.value.avatar = userinfo.value.photo;
+})
   </script>
   
   <style lang="scss" scoped>

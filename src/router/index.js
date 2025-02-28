@@ -11,6 +11,7 @@ import ContractManage from '@/views/manager/ContractManage.vue'
 import AnnouncementManage from '@/views/manager/AnnouncementManage.vue'
 import RepairManage from '@/views/manager/RepairManage.vue'
 import SuperManagerCenter from '@/views/supermanager/SuperManagerCenter.vue'
+import FeeManage from '@/views/manager/FeeManage.vue'
 
 
 const routes = [
@@ -49,6 +50,11 @@ const routes = [
         path: 'dashboard',
         name: '数据看板',
         component: Dashboard 
+      },
+      {
+        path: 'feemanage',
+        name: '订单管理',
+        component: FeeManage 
       },
       {
         path: 'housemanage',

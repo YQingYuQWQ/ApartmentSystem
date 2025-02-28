@@ -43,6 +43,7 @@
 import { ref, onMounted, watch } from 'vue'
 import * as echarts from 'echarts'
 import { House, Tools, Document, User } from '@element-plus/icons-vue'
+import api from '@/config/axios'
 
 const metrics = ref([
   { label: '总房屋数', value: '356', icon: House, trend: 'up', trendValue: '+2.3%' },
@@ -55,7 +56,7 @@ const chartType = ref('bar')
 const mainChart = ref(null)
 const progressChart = ref(null)
 
-onMounted(() => {
+onMounted(async () => {
   renderMainChart()
   renderProgressChart()
 })

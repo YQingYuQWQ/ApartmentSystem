@@ -1,5 +1,5 @@
 <template>
-    <div class="house-manage">
+    <div class="house-manage" >
         <div class="operate-bar">
             <el-button type="primary" @click="handleAdd">
                 <el-icon>
@@ -14,7 +14,7 @@
             </el-input>
         </div>
 
-        <el-table :data="filteredHouseList" style="width: 100%">
+        <el-table :data="filteredHouseList" style="width: 100%"  v-loading="listLoading">
             <el-table-column prop="house_number" label="房屋编号" />
             <el-table-column prop="status" label="状态">
                 <template #default="{ row }">
@@ -61,37 +61,47 @@
     </div>
 </template>
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
+import api from '@/config/axios'
+import dayjs from 'dayjs'
 
+const listLoading = ref(false)
 const houseList = ref([
-    { house_number: '001', status: 'available', price: 2000 },
-    { house_number: '002', status: 'occupied', price: 3000 },
-    { house_number: '003', status: 'available', price: 2500 }
+    // { house_number: '001', status: 'available', price: 2000 },
+    // { house_number: '002', status: 'occupied', price: 3000 },
+    // { house_number: '003', status: 'available', price: 2500 }
 ])
 
 const statusType = {
-    available: 'success',
-    occupied: 'danger'
+    vacant: 'success',
+    occupied: 'danger',
+    booked: 'warning',        // 新增 booked 状态
+    waiting: 'info',          // 新增 waiting 状态
+    under_maintenance: 'primary' // 新增 under_maintenance 状态
 }
 
 const statusText = {
-    available: '空闲',
-    occupied: '已出租'
+    vacant: '空闲',
+    occupied: '已出租',
+    booked: '已预定',        // 新增 booked 状态的显示文本
+    waiting: '等待中',       // 新增 waiting 状态的显示文本
+    under_maintenance: '维护中' // 新增 under_maintenance 状态的显示文本
 }
 
-const searchKey = ref('') 
-const dialogVisible = ref(false) 
-const currentHouse = ref(null) 
+const searchKey = ref('')
+const dialogVisible = ref(false)
+const currentHouse = ref(null)
 
 
 const handleAdd = () => {
-    currentHouse.value = { house_number: '', status: 'available', price: 0 } 
+    currentHouse.value = { house_number: '', status: 'available', price: 0 }
     dialogVisible.value = true
 }
 
 
 const handleEdit = (house) => {
-    currentHouse.value = { ...house } 
+    currentHouse.value = { ...house }
     dialogVisible.value = true
 }
 
@@ -99,7 +109,7 @@ const handleEdit = (house) => {
 const handleDelete = (house) => {
     const index = houseList.value.findIndex(item => item.house_number === house.house_number)
     if (index !== -1) {
-        houseList.value.splice(index, 1) 
+        houseList.value.splice(index, 1)
     }
 }
 
@@ -115,6 +125,24 @@ const handleSubmit = () => {
 
 const filteredHouseList = computed(() => {
     return houseList.value.filter(house => house.house_number.includes(searchKey.value))
+})
+
+const fetchData = async () => {
+    listLoading.value = true
+    try {
+        const res = await api.get('house/showList')
+        if (res.data.code === 0) {
+            houseList.value = res.data.data
+        }
+    } catch (error) {
+        ElMessage.error('获取数据失败')
+    } finally {
+        listLoading.value = false
+    }
+}
+
+onMounted(() => {
+    fetchData()
 })
 </script>
 <style scoped>
