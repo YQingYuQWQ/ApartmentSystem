@@ -5,39 +5,31 @@
       <div class="header-content">
         <h1 class="system-title">用户管理系统</h1>
         <div class="header-actions">
-          <el-switch
-            v-model="isDark"
-            inline-prompt
-            active-text="暗"
-            inactive-text="亮"
-            class="theme-switch"
-          />
+          <el-switch v-model="isDark" inline-prompt active-text="暗" inactive-text="亮" class="theme-switch" />
         </div>
       </div>
     </header>
 
     <main class="main-content">
       <div class="action-bar">
-        <el-input
-          v-model="searchKey"
-          placeholder="搜索用户..."
-          clearable
-          class="search-input"
-          @keyup.enter="handleSearch"
-        >
+        <el-input v-model="searchKey" placeholder="搜索用户..." clearable class="search-input" @keyup.enter="handleSearch">
           <template #prefix>
-            <el-icon><Search /></el-icon>
+            <el-icon>
+              <Search />
+            </el-icon>
           </template>
         </el-input>
         <el-button type="primary" @click="showCreateDialog">
-          <el-icon><Plus /></el-icon>
+          <el-icon>
+            <Plus />
+          </el-icon>
           新建用户
         </el-button>
       </div>
 
       <el-table :data="paginatedData" v-loading="loading" style="width: 100%">
         <el-table-column prop="id" label="ID" width="80" />
-        
+
         <el-table-column label="用户信息" width="220">
           <template #default="{ row }">
             <div class="user-info">
@@ -62,7 +54,7 @@
 
         <el-table-column prop="email" label="邮箱" />
         <el-table-column prop="phone" label="手机号" width="130" />
-        
+
         <el-table-column label="时间" width="180">
           <template #default="{ row }">
             <div class="time-info">
@@ -83,98 +75,44 @@
       </el-table>
 
       <div class="pagination">
-        <el-pagination
-          v-model:current-page="currentPage"
-          :page-size="pageSize"
-          :total="filteredUsers.length"
-          layout="total, prev, pager, next"
-        />
+        <el-pagination v-model:current-page="currentPage" :page-size="pageSize" :total="filteredUsers.length"
+          layout="total, prev, pager, next" />
       </div>
     </main>
 
-    <el-dialog
-      v-model="dialogVisible"
-      :title="dialogType === 'create' ? '新建用户' : '编辑用户'"
-      width="600px"
-    >
-      <el-form 
-        :model="formData" 
-        label-width="80px" 
-        :rules="formRules"
-        ref="formRef"
-      >
+    <el-dialog v-model="dialogVisible" :title="dialogType === 'create' ? '新建用户' : '编辑用户'" width="600px">
+      <el-form :model="formData" label-width="80px" :rules="formRules" ref="formRef">
         <el-form-item label="用户名" prop="username">
-          <el-input 
-            v-model="formData.username" 
-            placeholder="3-20位字母数字"
-            clearable
-          />
+          <el-input v-model="formData.username" placeholder="3-20位字母数字" clearable />
         </el-form-item>
-        
-        <el-form-item 
-          label="密码" 
-          prop="password" 
-          v-if="dialogType === 'create'"
-        >
-          <el-input 
-            v-model="formData.password" 
-            type="password" 
-            show-password 
-            placeholder="至少6位字符"
-            clearable
-          />
+
+        <el-form-item label="密码" prop="password" v-if="dialogType === 'create'">
+          <el-input v-model="formData.password" type="password" show-password placeholder="至少6位字符" clearable />
         </el-form-item>
-        
-        <el-form-item 
-          label="确认密码" 
-          prop="confirmPassword" 
-          v-if="dialogType === 'create'"
-        >
-          <el-input 
-            v-model="formData.confirmPassword" 
-            type="password" 
-            show-password 
-            placeholder="再次输入密码"
-            clearable
-          />
+
+        <el-form-item label="确认密码" prop="confirmPassword" v-if="dialogType === 'create'">
+          <el-input v-model="formData.confirmPassword" type="password" show-password placeholder="再次输入密码" clearable />
         </el-form-item>
 
         <el-form-item label="角色" prop="role">
           <el-select v-model="formData.role" placeholder="选择角色" clearable>
-            <el-option
-              v-for="(label, key) in roleMap"
-              :key="key"
-              :label="label"
-              :value="Number(key)"
-            />
+            <el-option v-for="(label, key) in roleMap" :key="key" :label="label" :value="Number(key)" />
           </el-select>
         </el-form-item>
 
         <el-form-item label="昵称" prop="nick_name">
-          <el-input 
-            v-model="formData.nick_name" 
-            placeholder="输入显示名称" 
-            clearable
-          />
+          <el-input v-model="formData.nick_name" placeholder="输入显示名称" clearable />
         </el-form-item>
 
         <el-form-item label="邮箱" prop="email">
-          <el-input 
-            v-model="formData.email" 
-            placeholder="example@domain.com" 
-            clearable
-          />
+          <el-input v-model="formData.email" placeholder="example@domain.com" clearable />
         </el-form-item>
 
         <el-form-item label="手机号" prop="phone">
-          <el-input 
-            v-model="formData.phone" 
-            placeholder="11位手机号码" 
-            clearable
-          />
+          <el-input v-model="formData.phone" placeholder="11位手机号码" clearable />
         </el-form-item>
       </el-form>
-      
+
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
         <el-button type="primary" @click="submitForm">确认</el-button>
@@ -189,6 +127,7 @@ import { useDark, useToggle } from '@vueuse/core'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import dayjs from 'dayjs'
 import api from '@/config/axios'
+import router from '@/router'
 
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
@@ -212,7 +151,6 @@ const roleTagType = {
 }
 
 const formRef = ref(null)
-
 const formRules = {
   username: [
     { required: true, message: '请输入用户名', trigger: 'blur' },
@@ -225,7 +163,7 @@ const formRules = {
   ],
   confirmPassword: [
     { required: true, message: '请确认密码', trigger: 'blur' },
-    { 
+    {
       validator: (rule, value, callback) => {
         if (value !== formData.value.password) {
           callback(new Error('两次输入密码不一致'))
@@ -291,8 +229,13 @@ const deleteUser = async (user) => {
       cancelButtonText: '取消',
       type: 'warning',
     })
-    users.value = users.value.filter(u => u.id !== user.id)
+    const res = await api.post('user/deleteUser', { id: user.id })
+    if (res.data.code != 0) {
+      ElMessage.error(res.data.message)
+      return;
+    }
     ElMessage.success('删除成功')
+    window.location.reload();
   } catch (error) {
     ElMessage.info('操作已取消')
   }
@@ -301,51 +244,48 @@ const deleteUser = async (user) => {
 const submitForm = async () => {
   try {
     await formRef.value.validate()
-    
     if (dialogType.value === 'create') {
-      const newUser = {
-        ...formData.value,
-        id: users.value.length + 1,
-        created_at: new Date(),
-        updated_at: new Date(),
-        photo: null
+      const body = { ...formData.value }
+      const res = await api.post('user/createUser', body)
+      if (res.data.code != 0) {
+        ElMessage.error(res.data.message)
+        return;
       }
-      users.value = [newUser, ...users.value]
     } else {
-      const index = users.value.findIndex(u => u.id === formData.value.id)
-      users.value[index] = {
-        ...users.value[index],
-        ...formData.value,
-        updated_at: new Date()
+      const body = { ...formData.value }
+      const res = await api.post('user/updateUser', body)
+      if (res.data.code != 0) {
+        ElMessage.error(res.data.message)
+        return;
       }
     }
-    
     dialogVisible.value = false
     ElMessage.success('操作成功')
+    window.location.reload();
   } catch (error) {
     console.log('表单验证失败', error)
   }
 }
 
 onMounted(async () => {
-    const userinfo = await api.get('user/getAllUser')
-    if(userinfo.data.code != '0'){
-      ElMessage.error(userinfo.data.message)
-      return;
-    }
-    users.value = userinfo.data.data
-    loading.value = false
+  const userinfo = await api.get('user/getAllUser')
+  if (userinfo.data.code != '0') {
+    ElMessage.error(userinfo.data.message)
+    return;
+  }
+  users.value = userinfo.data.data
+  loading.value = false
 })
 
-const filteredUsers = computed(() => 
-  users.value.filter(user => 
-    Object.values(user).some(value => 
+const filteredUsers = computed(() =>
+  users.value.filter(user =>
+    Object.values(user).some(value =>
       String(value).toLowerCase().includes(searchKey.value.toLowerCase())
     )
   )
 )
 
-const paginatedData = computed(() => 
+const paginatedData = computed(() =>
   filteredUsers.value.slice(
     (currentPage.value - 1) * pageSize,
     currentPage.value * pageSize
@@ -407,7 +347,7 @@ const paginatedData = computed(() =>
 
   .search-input {
     width: 300px;
-    
+
     :deep(.el-input__inner) {
       border-radius: 8px;
     }
@@ -424,7 +364,7 @@ const paginatedData = computed(() =>
       font-weight: 500;
       margin-bottom: 2px;
     }
-    
+
     .nickname {
       font-size: 12px;
       color: var(--el-text-color-secondary);
@@ -436,7 +376,7 @@ const paginatedData = computed(() =>
   font-size: 12px;
   line-height: 1.5;
   color: var(--el-text-color-secondary);
-  
+
   div {
     white-space: nowrap;
   }

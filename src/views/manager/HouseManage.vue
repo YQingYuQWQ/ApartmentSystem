@@ -96,10 +96,12 @@
                     <el-input-number v-model="currentHouse.deposit" :min="0" />
                 </el-form-item>
             </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取消</el-button>
-                <el-button type="primary" @click="handleSubmit">提交</el-button>
-            </span>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="dialogVisible = false">取消</el-button>
+                    <el-button type="primary" @click="handleSubmit">提交</el-button>
+                </span>
+            </template>
         </el-dialog>
 
         <!-- 创建合同对话框 -->
@@ -125,9 +127,11 @@
                 </el-form-item>
             </el-form>
 
-            <span slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="submitContract">提交合同</el-button>
-            </span>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button type="primary" @click="submitContract">提交合同</el-button>
+                </span>
+            </template>
         </el-dialog>
     </div>
 </template>
@@ -182,8 +186,8 @@ const createContract = (house) => {
 
 // 提交合同
 const submitContract = () => {
-    console.log('提交合同:', contractForm.value)
-    ElMessage.success(`合同为房屋编号 ${contractForm.value.house_number} 创建成功！`)
+    console.log('提交合同:', contractFormData.value)
+    ElMessage.success(`合同为房屋编号 ${contractFormData.value.house_number} 创建成功！`)
     contractDialogVisible.value = false  // 提交后关闭弹窗
 }
 
@@ -280,5 +284,8 @@ onMounted(() => {
 .el-tag {
     font-size: 12px;
     padding: 3px 8px;
+}
+.resizable-component {
+  contain: strict;
 }
 </style>
