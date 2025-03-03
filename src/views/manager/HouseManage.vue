@@ -17,6 +17,7 @@
 
         <!-- 房屋列表表格 -->
         <el-table :data="filteredHouseList" style="width: 100%" v-loading="listLoading">
+            <el-table-column type="id" label="房屋ID" width="60" />
             <el-table-column prop="house_number" label="房屋编号" />
             <el-table-column prop="building_name" label="楼栋名称" />
             <el-table-column prop="floor" label="楼层" />
@@ -59,7 +60,10 @@
         <!-- 房屋编辑对话框 -->
         <el-dialog v-model="dialogVisible" title="房屋信息">
             <el-form :model="currentHouse" ref="form" label-width="100px">
-                <el-form-item label="房屋编号">
+                <el-form-item label="房间ID">
+                    <el-input v-model="currentHouse.id" />
+                </el-form-item>
+                <el-form-item label="房间号">
                     <el-input v-model="currentHouse.house_number" />
                 </el-form-item>
                 <el-form-item label="租户id">
@@ -107,7 +111,10 @@
         <!-- 创建合同对话框 -->
         <el-dialog v-model="contractDialogVisible" title="创建合同" width="50%">
             <el-form :model="contractFormData" ref="contractForm" label-width="100px">
-                <el-form-item label="房屋编号">
+                <el-form-item label="房屋ID">
+                    <el-input v-model="contractFormData.house_id" readonly />
+                </el-form-item>
+                <el-form-item label="房间号">
                     <el-input v-model="contractFormData.house_number" readonly />
                 </el-form-item>
                 <el-form-item label="用户ID">
@@ -173,6 +180,7 @@ const searchKey = ref('')
 // 创建合同
 const createContract = (house) => {
     contractFormData.value = {
+        house_id: house.id,
         house_number: house.house_number,
         owner_id: house.owner_id,
         price: house.price,
@@ -185,10 +193,25 @@ const createContract = (house) => {
 }
 
 // 提交合同
-const submitContract = () => {
-    console.log('提交合同:', contractFormData.value)
-    ElMessage.success(`合同为房屋编号 ${contractFormData.value.house_number} 创建成功！`)
-    contractDialogVisible.value = false  // 提交后关闭弹窗
+const submitContract = async () => {
+    try {
+        console.log('提交合同:', contractFormData.value)
+        const res = await api.post('leaseContract/insertLeaseContract', {
+            ...contractFormData.value,
+            user_id: contractFormData.value.owner_id,
+            start_date: dayjs(contractFormData.value.start_date).format('YYYY-MM-DD'),
+            end_date: dayjs(contractFormData.value.end_date).format('YYYY-MM-DD')
+        })
+        if (res.data.code !== 0) {
+            ElMessage.error('合同创建失败' + res.data.message)
+            return
+        }
+        ElMessage.success(`合同为房屋编号 ${contractFormData.value.house_number} 创建成功！`)
+        contractDialogVisible.value = false  // 提交后关闭弹窗
+        window.location.reload();
+    } catch (e) {
+        ElMessage.error('合同创建失败')
+    }
 }
 
 // 添加房屋
@@ -285,7 +308,8 @@ onMounted(() => {
     font-size: 12px;
     padding: 3px 8px;
 }
+
 .resizable-component {
-  contain: strict;
+    contain: strict;
 }
 </style>

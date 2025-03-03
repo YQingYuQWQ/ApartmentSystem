@@ -36,7 +36,7 @@
                     </div>
                 </el-card>
 
-                <!-- <el-card class="card-item" @click="goToContract" v-else-if="showcard === 'occupied'">
+                <el-card class="card-item" @click="goToContract" v-else-if="showcard === 'occupied'">
                     <div class="card-content">
                         <el-icon :size="40" color="#409EFF">
                             <Memo />
@@ -44,7 +44,7 @@
                         <h3>查看明细</h3>
                         <p>查看房屋明细以及合同内容</p>
                     </div>
-                </el-card> -->
+                </el-card>
             </el-col>
 
             <!-- 在线缴费 -->
@@ -214,6 +214,28 @@
             </el-form-item>
         </el-form>
     </el-drawer>
+    <el-dialog v-model="dialogContractVisible" title="合同与房屋详情" width="600px">
+    <el-descriptions title="合同信息" border>
+        <el-descriptions-item label="合同编号">{{ contractData.house_id }}</el-descriptions-item>
+        <el-descriptions-item label="租客">{{ contractData.user_id }}</el-descriptions-item>
+        <el-descriptions-item label="租金">{{ contractData.monthly_rent }} 元/月</el-descriptions-item>
+        <el-descriptions-item label="开始日期">{{ contractData.start_date }}</el-descriptions-item>
+        <el-descriptions-item label="结束日期">{{ contractData.end_date }}</el-descriptions-item>
+    </el-descriptions>
+
+    <el-divider></el-divider>
+
+    <el-descriptions title="房屋信息" border>
+        <el-descriptions-item label="房间号">{{ houseData.house_number }}</el-descriptions-item>
+        <el-descriptions-item label="剩余电费">{{ houseData.power_fee }}</el-descriptions-item>
+        <el-descriptions-item label="剩余水费">{{ houseData.water_fee }}</el-descriptions-item>
+        <el-descriptions-item label="房屋押金">{{ houseData.deposit }}</el-descriptions-item>
+    </el-descriptions>
+
+    <template #footer>
+        <el-button @click="dialogContractVisible = false">关闭</el-button>
+    </template>
+</el-dialog>
 </template>
 
 <script setup>
@@ -234,6 +256,10 @@ const loading = ref(true)
 const drawerVisible = ref(false)
 
 const recentBills = ref([])
+const contractData = ref([])
+const houseData = ref([])
+const dialogContractVisible = ref(false)
+
 const getTypeTag = (type) => {
     switch (type) {
         case 'water':
@@ -313,6 +339,27 @@ const handleClose = () => {
         .then(() => {
             closeDrawer();
         })
+}
+const goToContract = async () => {
+    if (!showcard) {
+        ElMessage.warning('您还未租房！')
+        return;
+    }
+    const resContract = await api.post('leaseContract/getActiveLeaseContractByUserId', {
+        user_id: userInfo.value.id
+    });
+    const resHouse = await api.post('house/getByOwnerId');
+    if (resHouse.data.code != 0){
+        ElMessage.error('获取房屋数据失败' + res.data.message)
+        return
+    }
+    if (resContract.data.code != 0){
+        ElMessage.error('获取合同数据失败' + res.data.message)
+        return
+    }
+    contractData.value = resContract.data.data;
+    houseData.value = resHouse.data.data;
+    dialogContractVisible.value = true; 
 }
 
 
