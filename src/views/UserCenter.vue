@@ -133,14 +133,13 @@
                         </div>
                     </template>
                     <el-timeline>
-                        <el-timeline-item v-for="(item, index) in repairProgress" :key="index" :timestamp="item.time"
-                            placement="top">
+                        <el-timeline-item v-for="(item, index) in repairProgress" :key="index"
+                            :timestamp="item.created_at" placement="top">
                             <el-card shadow="hover">
-                                <h4>{{ item.title }}</h4>
+                                <h4>{{ item.description }}</h4>
                                 <el-tag :type="statusTypeMap[item.status]">
                                     {{ item.status }}
                                 </el-tag>
-                                <p>{{ item.desc }}</p>
                             </el-card>
                         </el-timeline-item>
                     </el-timeline>
@@ -149,31 +148,13 @@
         </el-row>
     </div>
     <!-- 缴费抽屉 -->
-    <el-drawer 
-        title="缴费管理" 
-        size="400px" 
-        v-model="drawerVisible" 
-        :before-close="handleClose"
-        class="payment-drawer"
-    >
-        <el-form 
-            :model="paymentForm" 
-            ref="paymentFormRef" 
-            label-position="top"
-            label-width="120px"
-            class="payment-form"
-        >
+    <el-drawer title="缴费管理" size="400px" v-model="drawerVisible" :before-close="handleClose" class="payment-drawer">
+        <el-form :model="paymentForm" ref="paymentFormRef" label-position="top" label-width="120px"
+            class="payment-form">
             <!-- 缴费类型 -->
-            <el-form-item 
-                label="缴费类型" 
-                prop="paymentType"
-                :rules="[{ required: true, message: '请选择缴费类型', trigger: 'change' }]"
-            >
-                <el-select 
-                    v-model="paymentForm.paymentType" 
-                    placeholder="请选择缴费类型"
-                    class="full-width-select"
-                >
+            <el-form-item label="缴费类型" prop="paymentType"
+                :rules="[{ required: true, message: '请选择缴费类型', trigger: 'change' }]">
+                <el-select v-model="paymentForm.paymentType" placeholder="请选择缴费类型" class="full-width-select">
                     <el-option label="水费" value="water" />
                     <el-option label="电费" value="electricity" />
                     <el-option label="物业费" value="property" />
@@ -181,21 +162,12 @@
             </el-form-item>
 
             <!-- 缴费金额 -->
-            <el-form-item 
-                label="缴费金额（元）" 
-                prop="amount"
-                :rules="[
-                    { required: true, message: '请输入金额', trigger: 'blur' },
-                    { pattern: /^\d+(\.\d{1,2})?$/, message: '请输入有效金额格式', trigger: 'blur' }
-                ]"
-            >
-                <el-input 
-                    v-model="paymentForm.amount" 
-                    placeholder="0.00"
-                    type="number"
-                    step="0.01"
-                    class="amount-input"
-                >
+            <el-form-item label="缴费金额（元）" prop="amount" :rules="[
+                { required: true, message: '请输入金额', trigger: 'blur' },
+                { pattern: /^\d+(\.\d{1,2})?$/, message: '请输入有效金额格式', trigger: 'blur' }
+            ]">
+                <el-input v-model="paymentForm.amount" placeholder="0.00" type="number" step="0.01"
+                    class="amount-input">
                     <template #prefix>¥</template>
                 </el-input>
             </el-form-item>
@@ -203,39 +175,68 @@
             <!-- 操作按钮 -->
             <el-form-item class="form-actions">
                 <el-button @click="closeDrawer" size="medium">取消</el-button>
-                <el-button 
-                    type="primary" 
-                    size="medium"
-                    @click="handlePayment"
-                    :loading="paymentLoading"
-                >
+                <el-button type="primary" size="medium" @click="handlePayment" :loading="paymentLoading">
                     立即支付
                 </el-button>
             </el-form-item>
         </el-form>
     </el-drawer>
     <el-dialog v-model="dialogContractVisible" title="合同与房屋详情" width="600px">
-    <el-descriptions title="合同信息" border>
-        <el-descriptions-item label="合同编号">{{ contractData.house_id }}</el-descriptions-item>
-        <el-descriptions-item label="租客">{{ contractData.user_id }}</el-descriptions-item>
-        <el-descriptions-item label="租金">{{ contractData.monthly_rent }} 元/月</el-descriptions-item>
-        <el-descriptions-item label="开始日期">{{ contractData.start_date }}</el-descriptions-item>
-        <el-descriptions-item label="结束日期">{{ contractData.end_date }}</el-descriptions-item>
-    </el-descriptions>
+        <el-descriptions title="合同信息" border>
+            <el-descriptions-item label="合同编号">{{ contractData.house_id }}</el-descriptions-item>
+            <el-descriptions-item label="租客">{{ contractData.user_id }}</el-descriptions-item>
+            <el-descriptions-item label="租金">{{ contractData.monthly_rent }} 元/月</el-descriptions-item>
+            <el-descriptions-item label="开始日期">{{ contractData.start_date }}</el-descriptions-item>
+            <el-descriptions-item label="结束日期">{{ contractData.end_date }}</el-descriptions-item>
+        </el-descriptions>
 
-    <el-divider></el-divider>
+        <el-divider></el-divider>
 
-    <el-descriptions title="房屋信息" border>
-        <el-descriptions-item label="房间号">{{ houseData.house_number }}</el-descriptions-item>
-        <el-descriptions-item label="剩余电费">{{ houseData.power_fee }}</el-descriptions-item>
-        <el-descriptions-item label="剩余水费">{{ houseData.water_fee }}</el-descriptions-item>
-        <el-descriptions-item label="房屋押金">{{ houseData.deposit }}</el-descriptions-item>
-    </el-descriptions>
+        <el-descriptions title="房屋信息" border>
+            <el-descriptions-item label="房间号">{{ houseData.house_number }}</el-descriptions-item>
+            <el-descriptions-item label="剩余电费">{{ houseData.power_fee }}</el-descriptions-item>
+            <el-descriptions-item label="剩余水费">{{ houseData.water_fee }}</el-descriptions-item>
+            <el-descriptions-item label="房屋押金">{{ houseData.deposit }}</el-descriptions-item>
+        </el-descriptions>
 
-    <template #footer>
-        <el-button @click="dialogContractVisible = false">关闭</el-button>
-    </template>
-</el-dialog>
+        <template #footer>
+            <el-button @click="dialogContractVisible = false">关闭</el-button>
+        </template>
+    </el-dialog>
+    <el-dialog v-model="dialogAnnounceMentVisible" title="公告通知" width="600px" :close-on-click-modal="false">
+        <el-scrollbar max-height="400px">
+            <el-card v-for="(announcement, index) in announcements" :key="announcement.id" shadow="never" class="mb-4">
+                <template #header>
+                    <span style="font-size: 16px; font-weight: bold;">{{ announcement.title }}</span>
+                </template>
+                <div style="white-space: pre-wrap;">{{ announcement.content }}</div>
+                <div style="margin-top: 10px; text-align: right; color: gray;">
+                    发布时间: {{ announcement.created_at }}
+                </div>
+                <el-divider v-if="index < announcements.length - 1"></el-divider>
+            </el-card>
+        </el-scrollbar>
+
+        <template #footer>
+            <el-button type="primary" @click="dialogAnnounceMentVisible = false">我知道了</el-button>
+        </template>
+    </el-dialog>
+
+    <el-dialog v-model="dialogRepairVisible" title="提交报修" width="500px">
+        <el-form :model="repairForm" label-width="80px">
+            <el-form-item label="房屋 ID">
+                <el-input v-model="repairForm.house_id" type="text" disabled />
+            </el-form-item>
+            <el-form-item label="描述">
+                <el-input v-model="repairForm.description" type="textarea" :rows="3" placeholder="请描述具体的报修问题..." />
+            </el-form-item>
+        </el-form>
+
+        <template #footer>
+            <el-button @click="dialogRepairVisible = false">取消</el-button>
+            <el-button type="primary" @click="submitRepair">提交</el-button>
+        </template>
+    </el-dialog>
 </template>
 
 <script setup>
@@ -249,11 +250,20 @@ import { House, Money, Bell, Tools, Document, Clock, Memo } from '@element-plus/
 const token = ref('')
 const userInfo = ref({})
 const paymentForm = ref({})
+const announcements = ref({});
+const repairForm = ref({
+    house_id: '',
+    description: '',
+    status: ''
+});
 
 const house = ref({})
 const showcard = ref('')
 const loading = ref(true)
 const drawerVisible = ref(false)
+const dialogAnnounceMentVisible = ref(false);
+const dialogRepairVisible = ref(false);
+
 
 const recentBills = ref([])
 const contractData = ref([])
@@ -298,37 +308,85 @@ const getTypeLabel = (type) => {
 };
 
 
-const repairProgress = ref([
-    {
-        time: '2024-03-10 14:00',
-        title: '卫生间漏水',
-        status: '处理中',
-        desc: '已分配维修人员，预计3个工作日内处理'
-    },
-    {
-        time: '2024-03-05 09:30',
-        title: '空调故障',
-        status: '已完成',
-        desc: '已更换压缩机，完成维修'
-    }
-])
+const repairProgress = ref([])
 
 const statusTypeMap = {
-    '待处理': 'danger',
-    '处理中': 'warning',
-    '已完成': 'success'
+    'pending': 'danger',
+    'in_progress': 'warning',
+    'completed': 'success'
 }
 
 const goToHome = () => router.push('/')
-const goToNotice = () => router.push('/notice')
-const goToRepair = () => router.push('/repair')
+const goToNotice = async () => {
+    try {
+        const res = await api.post('announcement/getAllAnnouncement');
+        if (res.data.code === 0) {
+            announcements.value = res.data.data;
+            dialogAnnounceMentVisible.value = true; // 显示公告弹框
+        } else {
+            ElMessage.info('暂无公告');
+        }
+    } catch (error) {
+        ElMessage.error('获取公告失败: ' + error.message);
+    }
+}
+const goToRepair = async () => {
+    if (showcard.value != 'occupied') {
+        ElMessage.warning("您还未租房")
+        return
+    }
+    repairForm.value.house_id = house.value.id;
+    repairForm.value.status = 'in_progress';
+    dialogRepairVisible.value = true;
+}
 const goToPayment = () => {
     if (!showcard) {
         ElMessage.warning('您还未租房！')
         return;
     }
     drawerVisible.value = true
-    console.log('1')
+}
+const handlePayment = async () => {
+    loading.value = true
+    switch (paymentForm.value.paymentType) {
+        case 'water':
+            try {
+                const fee = await api.post('fee/createWaterFee', {
+                    house_number: house.value.house_number,
+                    amount: paymentForm.value.amount,
+                    user_id: userInfo.value.id
+                })
+                if (fee.data.code != 0) {
+                    ElMessage.error('订单创建失败' + fee.data.message)
+                    loading.value = false
+                    return
+                }
+                loading.value = false
+                ElMessage.success('预定成功，正在跳转支付宝支付页面，请及时支付！')
+
+                const formHtml = response.data.data;
+
+                const formElement = document.createElement('div');
+                formElement.innerHTML = formHtml;
+                document.body.appendChild(formElement);
+
+                nextTick(() => {
+                    const form = formElement.querySelector('form');
+                    if (form) {
+                        form.submit();
+                    } else {
+                        console.error('没有找到表单元素');
+                    }
+                });
+            } catch (error) {
+                ElMessage.error('出错了！' + error)
+            }
+            break;
+        case 'power':
+            break;
+        case 'property':
+            break;
+    }
 }
 const closeDrawer = () => {
     drawerVisible.value = false
@@ -349,18 +407,41 @@ const goToContract = async () => {
         user_id: userInfo.value.id
     });
     const resHouse = await api.post('house/getByOwnerId');
-    if (resHouse.data.code != 0){
+    if (resHouse.data.code != 0) {
         ElMessage.error('获取房屋数据失败' + res.data.message)
         return
     }
-    if (resContract.data.code != 0){
+    if (resContract.data.code != 0) {
         ElMessage.error('获取合同数据失败' + res.data.message)
         return
     }
     contractData.value = resContract.data.data;
     houseData.value = resHouse.data.data;
-    dialogContractVisible.value = true; 
+    dialogContractVisible.value = true;
 }
+const submitRepair = async () => {
+    if (repairForm.value.house_id === null || repairForm.value.description === null) {
+        ElMessage.warning('请填写完整的报修信息');
+        return;
+    }
+    try {
+        const res = await api.post('repair/insertRepair', {
+            house_id: repairForm.value.house_id,
+            description: repairForm.value.description,
+            status: repairForm.value.status
+        });
+        if (res.data.code === 0) {
+            ElMessage.success('报修提交成功');
+            dialogRepairVisible.value = false; // 关闭弹框
+        } else {
+            ElMessage.error('报修提交失败: ' + res.data.message);
+            console.log(error)
+        }
+    } catch (error) {
+        ElMessage.error('提交失败: ' + error.message);
+        console.log(error)
+    }
+};
 
 
 onMounted(async () => {
@@ -401,6 +482,10 @@ onMounted(async () => {
             item.due_date = dayjs(item.due_date).format('YYYY-MM-DD');
         });
 
+        //获取报修记录
+        const repairList = await api.get(`repair/selectRepairByHouseId?house_id=${house.value.id}`)
+        console.log()
+        repairProgress.value = repairList.data.data
     } catch (error) {
         console.error('请求出错:', error);
     } finally {
@@ -509,32 +594,32 @@ onMounted(async () => {
 }
 
 .payment-drawer {
-        padding: 20px;
-    }
-    
-    .payment-form {
-        padding: 0 24px;
-    }
-    
-    .full-width-select {
-        width: 100%;
-    }
-    
-    .amount-input {
-        width: 100%;
-    }
-    
-    .amount-input :deep(.el-input__prefix) {
-        display: flex;
-        align-items: center;
-        padding-left: 8px;
-        color: #606266;
-    }
-    
-    .form-actions {
-        margin-top: 32px;
-        display: flex;
-        justify-content: flex-end;
-        gap: 12px;
-    }
+    padding: 20px;
+}
+
+.payment-form {
+    padding: 0 24px;
+}
+
+.full-width-select {
+    width: 100%;
+}
+
+.amount-input {
+    width: 100%;
+}
+
+.amount-input :deep(.el-input__prefix) {
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    color: #606266;
+}
+
+.form-actions {
+    margin-top: 32px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
 </style>
