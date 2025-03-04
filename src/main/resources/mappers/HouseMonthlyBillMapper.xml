@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apartmentsystem.mapper.HouseMonthlyBillMapper">
+
+    <insert id="insertHouseMonthlyBill">
+        INSERT INTO house_monthly_bill (bill_month, bill_start_date, bill_end_date, house_id, house_number, monthly_rent, rent_status, monthly_property_fee, property_fee_status, created_at, updated_at)
+        VALUES (#{bill_month}, #{bill_start_date}, #{bill_end_date}, #{house_id}, #{house_number}, #{monthly_rent}, #{rent_status}, #{monthly_property_fee}, #{property_fee_status}, NOW(), NOW())
+    </insert>
+</mapper>

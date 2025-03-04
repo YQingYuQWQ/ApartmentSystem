@@ -1,5 +1,6 @@
 package com.apartmentsystem.service.impl;
 
+import com.apartmentsystem.entity.Fee;
 import com.apartmentsystem.service.AlipayService;
 import com.apartmentsystem.util.AlipayUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import java.util.Map;
 public class AlipayServiceImpl implements AlipayService {
     @Autowired
     private FeeServiceImpl feeServiceImpl;
+    @Autowired
+    private HouseServiceImpl houseServiceImpl;
 
     /**
      * 处理支付宝回调
@@ -32,12 +35,40 @@ public class AlipayServiceImpl implements AlipayService {
 //        String outTradeNo = params.get("out_trade_no"); // 订单号
 //        String tradeNo = params.get("trade_no"); // 支付宝交易号
         String tradeStatus = params.get("trade_status"); // 交易状态
-
         if (!"TRADE_SUCCESS".equals(tradeStatus))
             throw new RuntimeException("支付宝回调交易状态不是TRADE_SUCCESS！");
+
         String fee_number = params.get("body");
         System.out.println("支付宝回调成功！订单号：" + fee_number);
-        feeServiceImpl.updateFeePaidByFeeNumber(fee_number, true);
+        Fee fee = new Fee();
+        fee.setType(feeServiceImpl.getTypeByFeeNumber(fee_number).getType());
+        fee.setUser_id(feeServiceImpl.getUserIdByFeeNumber(fee_number).getUser_id());
+        fee.setHouse_number(feeServiceImpl.getHouseNumberByFeeNumber(fee_number).getHouse_number());
+        switch (fee.getType()) {
+            case "deposit":
+                houseServiceImpl.updateOwnerByHouseNumber(fee.getHouse_number(), fee.getUser_id());
+                feeServiceImpl.updateFeePaidByFeeNumber(fee_number, true);
+                break;
+            case "power":
+                houseServiceImpl.updatePowerFeeByHouseNumber(fee.getHouse_number(), fee.getAmount());
+                feeServiceImpl.updateFeePaidByFeeNumber(fee_number, true);
+                feeServiceImpl.updateFeeStatusByFeeNumber(fee_number, true);
+                break;
+            case "water":
+                houseServiceImpl.updateWaterFeeByHouseNumber(fee.getHouse_number(), fee.getAmount());
+                feeServiceImpl.updateFeePaidByFeeNumber(fee_number, true);
+                feeServiceImpl.updateFeeStatusByFeeNumber(fee_number, true);
+                break;
+            case "maintenance":
+                feeServiceImpl.updateFeePaidByFeeNumber(fee_number, true);
+                break;
+            case "utilities":
+                feeServiceImpl.updateFeePaidByFeeNumber(fee_number, true);
+                break;
+            case "rent":
+                feeServiceImpl.updateFeePaidByFeeNumber(fee_number, true);
+                break;
+        }
     }
 
     /**

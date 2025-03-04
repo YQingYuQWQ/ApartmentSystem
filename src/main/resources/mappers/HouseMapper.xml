@@ -43,5 +43,8 @@
     <select id="getStatusByHouseNumber" resultType="java.lang.String">
         SELECT status FROM house WHERE house_number = #{house_number}
     </select>
+    <select id="getHouseByOwnerId" resultType="com.apartmentsystem.entity.House">
+        SELECT * FROM house WHERE owner_id = #{owner_id}
+    </select>
 
 </mapper>

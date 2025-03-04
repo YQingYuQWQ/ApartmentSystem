@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 @Mapper
 public interface UserMapper extends BaseMapper<User> {
     //根据用户名获取用户
@@ -16,4 +18,8 @@ public interface UserMapper extends BaseMapper<User> {
     Boolean updateUserPasswordById(@Param("id") int id, @Param("password") String password);
     Boolean insertUser(@Param("username") String username, @Param("password") String password, @Param("email") String email, @Param("phone") String phone, @Param("role") int role);
     Boolean insertNormalUser(User user);
+    List<User> getAllUser();
+    void updateUserById(User user);
+    void createUser(User user);
+    void deleteUserById(int id);
 }

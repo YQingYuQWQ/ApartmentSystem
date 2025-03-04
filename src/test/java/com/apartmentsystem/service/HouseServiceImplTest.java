@@ -31,4 +31,9 @@ public class HouseServiceImplTest {
     @Test
     public void testShowHouseList() {
     }
+
+    @Test
+    public void testGetHouseByOwnerId() {
+        System.out.println(houseServiceImpl.getHouseByOwnerId(14));
+    }
 }

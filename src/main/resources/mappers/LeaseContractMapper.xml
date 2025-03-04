@@ -23,7 +23,7 @@
         DELETE FROM lease_contract WHERE id = #{id}
     </delete>
     <select id="selectLeaseContractByUserName" resultType="com.apartmentsystem.entity.LeaseContract">
-        SELECT * FROM lease_contract WHERE user_id = (SELECT id FROM user WHERE user_name = #{user_name})
+        SELECT * FROM lease_contract WHERE user_id = (SELECT id FROM users WHERE user_name = #{user_name})
     </select>
     <select id="selectAllLeaseContract" resultType="com.apartmentsystem.entity.LeaseContract">
         SELECT * FROM lease_contract

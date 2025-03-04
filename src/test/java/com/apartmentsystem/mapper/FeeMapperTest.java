@@ -29,12 +29,6 @@ public class FeeMapperTest {
     }
 
     @Test
-    public void testGetFeeByFeeNumber() {
-        Fee fee = feeMapper.getFeeByFeeNumber("Fee202502121108077052283");
-        System.out.println(DateFormatUtil.formatDate(fee.getDue_date()));
-    }
-
-    @Test
     public void testInsertdepositFee() {
         Fee fee = new Fee();
         fee.setHouse_number("202");
@@ -42,5 +36,15 @@ public class FeeMapperTest {
         fee.setAmount(BigDecimal.valueOf(100));
         feeMapper.insertFee(fee);
         System.out.println(fee.getId());
+    }
+
+    @Test
+    public void testGetFeeByUserId() {
+        System.out.println(feeMapper.getFeeByUserId(14));
+    }
+
+    @Test
+    public void testGetFeeByFeeNumber() {
+        System.out.println(feeMapper.getFeeByFeeNumber("Fee202502241959254976212"));
     }
 }

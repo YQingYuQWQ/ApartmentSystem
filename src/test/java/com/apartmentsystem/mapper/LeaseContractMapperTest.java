@@ -17,8 +17,8 @@ public class LeaseContractMapperTest {
     @Test
     public void testInsertLeaseContract() {
         LeaseContract leaseContract = new LeaseContract();
-        leaseContract.setHouse_id(1);
-        leaseContract.setUser_id(1);
+        leaseContract.setHouse_id(2);
+        leaseContract.setUser_id(14);
         leaseContract.setStart_date(Date.valueOf("2025-01-01"));
         leaseContract.setEnd_date(Date.valueOf("2025-07-01"));
         leaseContract.setContract_status("active");
@@ -55,7 +55,7 @@ public class LeaseContractMapperTest {
     public void testSelectLeaseContractByUserName() {
         LeaseContract leaseContract = new LeaseContract();
         leaseContract.setUser_id(1);
-        leaseContractMapper.selectLeaseContractByUserName(leaseContract);
+        leaseContractMapper.selectLeaseContractByUserName("");
     }
 
     @Test
@@ -76,5 +76,14 @@ public class LeaseContractMapperTest {
             System.out.println("房屋未被租赁");
         else
             System.out.println("房屋已被租赁");
+    }
+
+    @Test
+    public void test(){
+        LeaseContract leaseContract1 = new LeaseContract();
+        leaseContract1.setUser_id(1);
+        LeaseContract leaseContract = leaseContractMapper.selectActiveLeaseContractByUserId(1);
+        System.out.println(leaseContract.getStart_date());
+        System.out.println(leaseContract.getEnd_date());
     }
 }

@@ -3,6 +3,8 @@ package com.apartmentsystem.util;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 @Component
@@ -20,5 +22,16 @@ public class DateFormatUtil {
         }
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
         return sdf.format(date);
+    }
+
+    /**
+     * 计算两个日期之间的月份数
+     *
+     * @param startDate 起始日期
+     * @param endDate   结束日期
+     * @return 月份数
+     */
+    public static long calculateMonthsBetween(LocalDate startDate, LocalDate endDate) {
+        return ChronoUnit.MONTHS.between(startDate, endDate);
     }
 }

@@ -23,7 +23,6 @@ public class HouseMapperTest {
         house.setStatus("vacant");
         house.setArea(18);
         house.setPrice(BigDecimal.valueOf(2400));
-        house.setOwner_id(null);
         houseMapper.insertHouse(house);
     }
 
@@ -63,4 +62,11 @@ public class HouseMapperTest {
     public void testGetHouseList() {
         System.out.println(houseMapper.getHouseList());
     }
+
+    @Test
+    public void testUpdateWaterFeeByHouseNumber() {
+        houseMapper.updateWaterFeeByHouseNumber("102", BigDecimal.valueOf(100));
+    }
+
+
 }

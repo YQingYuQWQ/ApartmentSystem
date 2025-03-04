@@ -19,4 +19,5 @@ public class AlipayProperties {
     private String charset;
     private String signType;
     private String encryptType;
+    private String returnUrl;
 }

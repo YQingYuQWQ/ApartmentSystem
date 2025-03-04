@@ -4,6 +4,7 @@ import com.apartmentsystem.entity.House;
 import com.apartmentsystem.entity.Result;
 import com.apartmentsystem.service.impl.HouseServiceImpl;
 import com.apartmentsystem.service.impl.LogServiceImpl;
+import com.apartmentsystem.util.UserHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,4 +58,15 @@ public class HouseController {
     public Result showHouseList() {
         return Result.success(houseServiceImpl.showHouseList());
     }
+
+    @PostMapping("/getByOwnerId")
+    public Result getHouseByOwnerId() {
+        return Result.success(houseServiceImpl.getHouseByOwnerId(UserHolder.getUser().getId()));
+    }
+
+    @PostMapping("/getHouseList")
+    public Result getHouseList() {
+        return Result.success(houseServiceImpl.getHouseList());
+    }
+
 }

@@ -7,6 +7,7 @@ import com.apartmentsystem.util.UserHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
@@ -67,6 +68,24 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
+    public void updateWaterFeeByHouseNumber(String house_number, BigDecimal water_fee) {
+        House house = houseMapper.getHouseByHouseNumber(house_number);
+        if(house==null)
+            throw new RuntimeException("房屋不存在");
+        logServiceImpl.insertLog(UserHolder.getUser().getId(), "update house water fee" + "house_number: "+house_number+" water_fee: "+water_fee);
+        houseMapper.updateWaterFeeByHouseNumber(house_number, water_fee);
+    }
+
+    @Override
+    public void updatePowerFeeByHouseNumber(String house_number, BigDecimal power_fee) {
+        House house = houseMapper.getHouseByHouseNumber(house_number);
+        if(house==null)
+            throw new RuntimeException("房屋不存在");
+        logServiceImpl.insertLog(UserHolder.getUser().getId(), "update house power fee" + "house_number: "+house_number+" power_fee: "+power_fee);
+        houseMapper.updatePowerFeeByHouseNumber(house_number, power_fee);
+    }
+
+    @Override
     public House getHouseByHouseNumber(String house_number) {
         return houseMapper.getHouseByHouseNumber(house_number);
     }
@@ -77,6 +96,11 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
+    public House getHouseByOwnerId(int owner_id) {
+        return houseMapper.getHouseByOwnerId(owner_id);
+    }
+
+    @Override
     public String getStatusByHouseNumber(String house_number) {
         return houseMapper.getStatusByHouseNumber(house_number);
     }
@@ -84,5 +108,12 @@ public class HouseServiceImpl implements HouseService {
     @Override
     public List<House> showHouseList() {
         return houseMapper.showHouseList();
+    }
+
+    @Override
+    public List<House> getHouseList() {
+        if (1 == UserHolder.getUser().getRole())
+            throw new RuntimeException("权限不足");
+        return houseMapper.getHouseList();
     }
 }

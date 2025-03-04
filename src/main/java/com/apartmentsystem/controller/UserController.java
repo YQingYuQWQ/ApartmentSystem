@@ -30,4 +30,26 @@ public class UserController {
         return Result.success(userServiceImpl.getUserInfo());
     }
 
+    @GetMapping("/getAllUser")
+    public Result getAllUser() {
+        return Result.success(userServiceImpl.getAllUser());
+    }
+
+    @PostMapping("/updateUser")
+    public Result updateUser(@RequestBody User user) {
+        userServiceImpl.updateUserById(user);
+        return Result.success();
+    }
+
+    @PostMapping("/createUser")
+    public Result createUser(@RequestBody User user) {
+        userServiceImpl.createUserById(user);
+        return Result.success();
+    }
+
+    @PostMapping("/deleteUser")
+    public Result deleteUser(@RequestBody User user) {
+        userServiceImpl.deleteUserById(user.getId());
+        return Result.success();
+    }
 }

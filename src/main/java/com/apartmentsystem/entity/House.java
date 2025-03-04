@@ -1,5 +1,6 @@
 package com.apartmentsystem.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -19,10 +20,14 @@ public class House {
     private String house_number;
     private String building_name;
     private int floor;
-    private Integer owner_id;
+    private int owner_id;
     private String status;
+
+    @TableField(exist = false)
     private String created_at;
+    @TableField(exist = false)
     private String updated_at;
+
     private BigDecimal water_fee;
     private BigDecimal power_fee;
     private BigDecimal deposit;

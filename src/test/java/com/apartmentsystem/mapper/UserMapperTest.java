@@ -17,7 +17,6 @@ public class UserMapperTest {
         user.setPassword("123456");
         user.setEmail("123009@qq.com");
         user.setPhone("12345678901");
-        user.setRole(1);
         user.setNick_name("test1");
         System.out.println(userMapper.insertNormalUser(user));
     }
@@ -27,4 +26,13 @@ public class UserMapperTest {
         System.out.println(userMapper.getUserByUserName("test1"));
     }
 
+    @Test
+    public void getUserInfo() {
+        System.out.println(userMapper.getUserByUserName("yiqingyu"));
+    }
+
+    @Test
+    public void testGetAllUser() {
+        System.out.println(userMapper.getAllUser());
+    }
 }

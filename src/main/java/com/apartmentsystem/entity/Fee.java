@@ -1,5 +1,6 @@
 package com.apartmentsystem.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,9 +13,10 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Fee {
-    private int id;
+    private Integer id;
     private String fee_number;
     private String house_number;
+    private int user_id;
     private String type;
     private BigDecimal amount;
     private Date due_date;

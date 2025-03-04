@@ -3,14 +3,17 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.apartmentsystem.mapper.FeeMapper">
     <insert id="insertFee" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO fee (fee_number, house_number, type, amount, due_date, paid, created_at, updated_at) VALUES
-        (#{fee_number}, #{house_number}, #{type}, #{amount}, DATE_ADD(NOW(), INTERVAL 30 MINUTE), false, NOW(), NOW())
+        INSERT INTO fee (fee_number, house_number, user_id, type, amount, due_date, paid, created_at, updated_at) VALUES
+        (#{fee_number}, #{house_number}, #{user_id}, #{type}, #{amount}, DATE_ADD(NOW(), INTERVAL 30 MINUTE), false, NOW(), NOW())
     </insert>
     <update id="updateFeePaidById">
         UPDATE fee SET paid = true, updated_at = NOW() WHERE id = #{id}
     </update>
     <update id="updateFeePaidByFeeNumber">
         UPDATE fee SET paid = true, updated_at = NOW() WHERE fee_number = #{fee_number}
+    </update>
+    <update id="updateFeeStatusByFeeNumber">
+        UPDATE fee SET paid = #{status}, updated_at = NOW() WHERE fee_number = #{fee_number}
     </update>
     <select id="getFeeById" resultType="com.apartmentsystem.entity.Fee">
         SELECT * FROM fee WHERE id = #{id}
@@ -26,5 +29,20 @@
     </select>
     <select id="getFalsePaidFeeByHouseNumber" resultType="com.apartmentsystem.entity.Fee">
         SELECT * FROM fee WHERE house_number = #{house_number} AND paid = false
+    </select>
+    <select id="getUserIdByFeeNumber" resultType="com.apartmentsystem.entity.Fee">
+        SELECT user_id FROM fee WHERE fee_number = #{fee_number}
+    </select>
+    <select id="getTypeByFeeNumber" resultType="com.apartmentsystem.entity.Fee">
+        SELECT type FROM fee WHERE fee_number = #{fee_number}
+    </select>
+    <select id="getHouseNumberByFeeNumber" resultType="com.apartmentsystem.entity.Fee">
+        SELECT house_number FROM fee WHERE fee_number = #{fee_number}
+    </select>
+    <select id="getFeeByUserId" resultType="com.apartmentsystem.entity.Fee">
+        SELECT * FROM fee WHERE user_id = #{user_id}
+    </select>
+    <select id="getAllFee" resultType="com.apartmentsystem.entity.Fee">
+        SELECT * FROM fee
     </select>
 </mapper>

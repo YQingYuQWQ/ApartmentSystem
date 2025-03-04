@@ -6,22 +6,21 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.sql.Date;
-import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LeaseContract {
+public class HouseMonthlyBill {
     private Integer id;
+    private int bill_month;
+    private Date bill_start_date;
+    private Date bill_end_date;
     private int house_id;
     private String house_number;
-    private int user_id;
-    private int count_month;
-    private Date start_date;
-    private Date end_date;
-    private String contract_status;
     private BigDecimal monthly_rent;
-    private BigDecimal deposit;
-    private Timestamp created_at;
-    private Timestamp updated_at;
+    private Boolean rent_status;
+    private BigDecimal monthly_property_fee;
+    private Boolean property_fee_status;
+    private Date created_at;
+    private Date updated_at;
 }

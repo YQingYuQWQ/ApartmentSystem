@@ -1,5 +1,6 @@
 package com.apartmentsystem.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
@@ -13,7 +14,8 @@ public class User {
     private String password;
     private String email;
     private String phone;
-    private int role; // 0: admin, 1: user 2: manager
+    // 0: admin, 1: user 2: manager
+    private int role;
     private String created_at;
     private String updated_at;
     private String photo;

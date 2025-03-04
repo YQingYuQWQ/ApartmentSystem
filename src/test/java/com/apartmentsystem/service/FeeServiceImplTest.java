@@ -27,15 +27,15 @@ public class FeeServiceImplTest {
     @Test
     public void testInsertDepositFee() throws AlipayApiException {
         Fee fee = new Fee();
-        fee.setHouse_number("201");
-        feeServiceImpl.insertdepositFee(fee);
+        fee.setHouse_number("301");
+        System.out.println(feeServiceImpl.insertDepositFee(fee));
     }
 
     @Test
     public void testCreateAliPayOrderForm() throws AlipayApiException {
         Fee fee = new Fee();
         fee.setFee_number(OrderNumberUtil.generateOrderNumber("Fee"));
-        fee.setHouse_number("101");
+        fee.setHouse_number("301");
         fee.setType("deposit");
         fee.setAmount(BigDecimal.valueOf(500));
         feeServiceImpl.createAliPayOrderForm(fee);

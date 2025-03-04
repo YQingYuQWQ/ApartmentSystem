@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -67,6 +68,7 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("角色错误");
 
         Map<String, Object> claims = new HashMap<>();
+        claims.put("role", user.getRole());
         claims.put("id", user.getId());
         claims.put("username", user.getUsername());
         String token = JWTutil.genToken(claims);
@@ -116,5 +118,34 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserInfo() {
         return userMapper.getUserByUserName(UserHolder.getUser().getUsername());
+    }
+
+    @Override
+    public List<User> getAllUser() {
+        if(UserHolder.getUser().getRole() != 0)
+            throw new RuntimeException("权限不足");
+        return userMapper.getAllUser();
+    }
+
+    @Override
+    public void updateUserById(User user) {
+        if(UserHolder.getUser().getRole() != 0)
+            throw new RuntimeException("权限不足");
+        userMapper.updateUserById(user);
+    }
+
+    @Override
+    public void createUserById(User user) {
+        if(UserHolder.getUser().getRole() != 0)
+            throw new RuntimeException("权限不足");
+        user.setPassword(PasswordUtil.encryptPassword(user.getPassword()));
+        userMapper.createUser(user);
+    }
+
+    @Override
+    public void deleteUserById(int id) {
+        if(UserHolder.getUser().getRole() != 0)
+            throw new RuntimeException("权限不足");
+        userMapper.deleteUserById(id);
     }
 }

@@ -11,7 +11,7 @@ public interface LeaseContractMapper {
     void insertLeaseContract(LeaseContract leaseContract);
     void updateLeaseContractByUserId(LeaseContract leaseContract);
     void deleteLeaseContractById(LeaseContract leaseContract);
-    LeaseContract selectLeaseContractByUserName(LeaseContract leaseContract);
+    LeaseContract selectLeaseContractByUserName(String user_name);
     List<LeaseContract> selectAllLeaseContract();
     LeaseContract selectActiveLeaseContractByUserId(@Param("user_id") int user_id);
 }

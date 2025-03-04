@@ -17,4 +17,14 @@ public class LeaseContractController {
     public Result getActiveLeaseContractByUserId(@RequestBody LeaseContract leaseContract) {
         return Result.success(leaseContractServiceImpl.selectActiveLeaseContractByUserId(leaseContract.getUser_id()));
     }
+
+    @PostMapping("/insertLeaseContract")
+    public Result insertLeaseContract(@RequestBody LeaseContract leaseContract) {
+        return Result.success(leaseContractServiceImpl.insertLeaseContract(leaseContract));
+    }
+
+    @PostMapping("/getAllLeaseContract")
+    public Result getAllLeaseContract() {
+        return Result.success(leaseContractServiceImpl.selectAllLeaseContract());
+    }
 }
