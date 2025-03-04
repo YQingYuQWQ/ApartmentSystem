@@ -10,6 +10,7 @@
           default-active="1"
           router
           class="admin-menu"
+          teleported
         >
           <el-menu-item index="/managercenter/dashboard">
             <el-icon><DataLine /></el-icon>
@@ -112,10 +113,12 @@
     display: flex;
     min-height: 100vh;
     background: #f0f2f5;
+    overflow: hidden;
   
     .admin-side {
       background: #001529;
       transition: width 0.3s;
+      transition: none !important; 
   
       .logo-area {
         display: flex;

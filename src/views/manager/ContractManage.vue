@@ -3,13 +3,6 @@
     <!-- 操作工具栏 -->
     <el-card shadow="never" class="operation-bar">
       <div class="toolbar">
-        <el-button type="primary" @click="handleAdd">
-          <el-icon>
-            <Plus />
-          </el-icon>
-          新增合同
-        </el-button>
-
         <div class="search-area">
           <el-input v-model="searchKey" placeholder="搜索合同编号/租户/房屋" clearable @input="handleSearch" class="search-input">
             <template #prefix>

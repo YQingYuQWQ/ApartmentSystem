@@ -17,7 +17,6 @@
 
         <!-- 房屋列表表格 -->
         <el-table :data="filteredHouseList" style="width: 100%" v-loading="listLoading">
-            <el-table-column type="id" label="房屋ID" width="60" />
             <el-table-column prop="house_number" label="房屋编号" />
             <el-table-column prop="building_name" label="楼栋名称" />
             <el-table-column prop="floor" label="楼层" />
@@ -60,9 +59,6 @@
         <!-- 房屋编辑对话框 -->
         <el-dialog v-model="dialogVisible" title="房屋信息">
             <el-form :model="currentHouse" ref="form" label-width="100px">
-                <el-form-item label="房间ID">
-                    <el-input v-model="currentHouse.id" />
-                </el-form-item>
                 <el-form-item label="房间号">
                     <el-input v-model="currentHouse.house_number" />
                 </el-form-item>
@@ -223,6 +219,7 @@ const handleAdd = () => {
 // 编辑房屋
 const handleEdit = (house) => {
     currentHouse.value = { ...house }
+    
     dialogVisible.value = true
 }
 

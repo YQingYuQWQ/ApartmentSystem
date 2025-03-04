@@ -17,8 +17,8 @@
         </el-input>
       </div>
   
-      <el-table :data="repairList" style="width: 100%">
-        <el-table-column prop="repair_number" label="报修单号" />
+      <el-table :data="repairList" style="width: 100%" align="center">
+        <el-table-column prop="id" label="报修单号" />
         <el-table-column prop="status" label="状态">
           <template #default="{ row }">
             <el-tag :type="statusType[row.status]">
@@ -73,8 +73,10 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue';
+  import { ref, onMounted } from 'vue';
   import { ElMessage } from 'element-plus';
+  import { Plus, Search,  } from '@element-plus/icons-vue'
+import api from '@/config/axios';
   
   const repairList = ref([
     { repair_number: 'R001', description: '水管漏水', status: 'pending', date: '2024-05-15' },
@@ -138,6 +140,14 @@
     }
     dialogVisible.value = false;
   };
+
+  const fetchRepairs = async() => {
+    const res = api.post('')
+  }
+
+onMounted(() => {
+  fetchRepairs()
+})
   </script>
   
   <style scoped>
