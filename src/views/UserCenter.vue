@@ -240,7 +240,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { ElMessage, ElLoading, ElMessageBox } from 'element-plus'
 import router from '@/router/index'
 import api from '@/config/axios'
@@ -339,6 +339,8 @@ const goToRepair = async () => {
     repairForm.value.status = 'in_progress';
     dialogRepairVisible.value = true;
 }
+
+//缴费模块
 const goToPayment = () => {
     if (!showcard) {
         ElMessage.warning('您还未租房！')
@@ -364,7 +366,7 @@ const handlePayment = async () => {
                 loading.value = false
                 ElMessage.success('预定成功，正在跳转支付宝支付页面，请及时支付！')
 
-                const formHtml = response.data.data;
+                const formHtml = fee.data.data;
 
                 const formElement = document.createElement('div');
                 formElement.innerHTML = formHtml;
