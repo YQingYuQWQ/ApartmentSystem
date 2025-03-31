@@ -50,7 +50,7 @@
                         </div>
                         <div class="price-item">
                             <span class="label">押金要求</span>
-                            <span class="value">¥{{ roomData.price * 2 }}（押二付一）</span>
+                            <span class="value">¥{{ roomData.price }}（押一付一）</span>
                         </div>
                     </div>
                 </el-card>
@@ -132,6 +132,7 @@ const statusText = {
     occupied: '已出租',
     under_maintenance: '维护中'
 }
+
 
 const bookingButtonText = computed(() => {
     return roomData.value.status === 'vacant' ? '立即预订' : statusText[roomData.value.status]

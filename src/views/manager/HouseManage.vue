@@ -154,6 +154,7 @@ const contractFormData = ref({})
 
 const dialogVisible = ref(false)  // 用于房屋编辑对话框显示控制
 const currentHouse = ref(null)  // 当前正在编辑的房屋数据
+const houseStatus = ref()  // 当前房屋编辑状态
 
 const statusType = {
     vacant: 'success',
@@ -191,7 +192,6 @@ const createContract = (house) => {
 // 提交合同
 const submitContract = async () => {
     try {
-        console.log('提交合同:', contractFormData.value)
         const res = await api.post('leaseContract/insertLeaseContract', {
             ...contractFormData.value,
             user_id: contractFormData.value.owner_id,
@@ -212,14 +212,15 @@ const submitContract = async () => {
 
 // 添加房屋
 const handleAdd = () => {
-    currentHouse.value = { house_number: '', status: 'vacant', price: 0 }
+    currentHouse.value = { house_number: '', status: 'vacant', price: 0, area: 0, water_fee: 0, power_fee: 0, deposit: 0, building_name: '', owner_id: '', floor: 1 }
+    houseStatus.value = 'add'
     dialogVisible.value = true
 }
 
 // 编辑房屋
 const handleEdit = (house) => {
     currentHouse.value = { ...house }
-    
+    houseStatus.value = 'edit'
     dialogVisible.value = true
 }
 
@@ -233,12 +234,51 @@ const handleDelete = (house) => {
 
 // 提交房屋表单
 const handleSubmit = () => {
-    const index = houseList.value.findIndex(item => item.house_number === currentHouse.value.house_number)
-    if (index === -1) {
-        houseList.value.push({ ...currentHouse.value })
-    } else {
-        houseList.value[index] = { ...currentHouse.value }
+    if (houseStatus.value === 'add') {
+        api.post('house/insert', {...currentHouse.value,
+            floor: currentHouse.value.floor,
+            price: currentHouse.value.price,
+            area: currentHouse.value.area,
+            water_fee: currentHouse.value.water_fee,
+            power_fee: currentHouse.value.power_fee,
+            deposit: currentHouse.value.deposit,
+            status: currentHouse.value.status,
+            building_name: currentHouse.value.building_name,
+            owner_id: currentHouse.value.owner_id,
+            house_number: currentHouse.value.house_number
+        }).then(res => {
+            if (res.data.code === 0) {
+                ElMessage.success('添加成功')
+                dialogVisible.value = false
+                fetchData()
+            } else {
+                ElMessage.error('添加失败:' + res.data.message)
+            }
+        })
     }
+    if (houseStatus.value === 'edit') {
+        api.post('house/updateInfoByHouseNumber', {...currentHouse.value,
+            floor: currentHouse.value.floor,
+            price: currentHouse.value.price,
+            area: currentHouse.value.area,
+            water_fee: currentHouse.value.water_fee,
+            power_fee: currentHouse.value.power_fee,
+            deposit: currentHouse.value.deposit,
+            status: currentHouse.value.status,
+            building_name: currentHouse.value.building_name,
+            owner_id: currentHouse.value.owner_id,
+            house_number: currentHouse.value.house_number
+        }).then(res => {
+            if (res.data.code === 0) {
+                ElMessage.success('修改成功')
+                dialogVisible.value = false
+                fetchData()
+            } else {
+                ElMessage.error('修改失败:' + res.data.message)
+            }
+        })
+    }
+
     dialogVisible.value = false
 }
 

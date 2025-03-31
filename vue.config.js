@@ -6,6 +6,9 @@ module.exports = defineConfig({
     allowedHosts: [
       'myredstone.top',
       'ddns.myredstone.top'
-    ],    
+    ],
+    client: {
+      overlay: false
+  },
   },
 });

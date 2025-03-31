@@ -27,12 +27,20 @@ watch(
         break;
 
       case '/usercenter':
+        document.documentElement.style.height = '100%';
+        document.body.style.height = '100%';
+        document.body.style.margin = '0';
+        document.body.style.overflow = 'hidden';
         document.body.style.backgroundImage = `url(${require('@/assets/BG-usercenter.png')})`;
         document.body.style.backgroundSize = 'cover';  
         document.body.style.backgroundPosition = 'center';  
         break;
 
       case '/houseinfo':
+        document.documentElement.style.height = '100%';
+        document.body.style.height = '100%';
+        document.body.style.margin = '0';
+        document.body.style.overflow = 'hidden';
         document.body.style.backgroundImage = `url(${require('@/assets/BG-houseinfo.png')})`;
         document.body.style.backgroundSize = 'cover';  
         document.body.style.backgroundPosition = 'center';  

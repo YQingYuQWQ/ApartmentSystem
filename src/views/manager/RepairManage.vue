@@ -18,7 +18,7 @@
       </div>
   
       <el-table :data="repairList" style="width: 100%" align="center">
-        <el-table-column prop="id" label="报修单号" />
+        <el-table-column prop="repair_number" label="报修单号" />
         <el-table-column prop="status" label="状态">
           <template #default="{ row }">
             <el-tag :type="statusType[row.status]">
@@ -145,9 +145,9 @@ import api from '@/config/axios';
     const res = api.post('')
   }
 
-onMounted(() => {
-  fetchRepairs()
-})
+// onMounted(() => {
+//   fetchRepairs()
+// })
   </script>
   
   <style scoped>

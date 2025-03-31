@@ -133,8 +133,8 @@
                         </div>
                     </template>
                     <el-timeline>
-                        <el-timeline-item v-for="(item, index) in repairProgress" :key="index"
-                            :timestamp="item.created_at" placement="top">
+                        <el-timeline-item v-for="(item, index) in repairProgress" :key="index" :timestamp="item.created_at"
+                            placement="top">
                             <el-card shadow="hover">
                                 <h4>{{ item.description }}</h4>
                                 <el-tag :type="statusTypeMap[item.status]">
@@ -149,8 +149,7 @@
     </div>
     <!-- 缴费抽屉 -->
     <el-drawer title="缴费管理" size="400px" v-model="drawerVisible" :before-close="handleClose" class="payment-drawer">
-        <el-form :model="paymentForm" ref="paymentFormRef" label-position="top" label-width="120px"
-            class="payment-form">
+        <el-form :model="paymentForm" ref="paymentFormRef" label-position="top" label-width="120px" class="payment-form">
             <!-- 缴费类型 -->
             <el-form-item label="缴费类型" prop="paymentType"
                 :rules="[{ required: true, message: '请选择缴费类型', trigger: 'change' }]">
@@ -166,8 +165,7 @@
                 { required: true, message: '请输入金额', trigger: 'blur' },
                 { pattern: /^\d+(\.\d{1,2})?$/, message: '请输入有效金额格式', trigger: 'blur' }
             ]">
-                <el-input v-model="paymentForm.amount" placeholder="0.00" type="number" step="0.01"
-                    class="amount-input">
+                <el-input v-model="paymentForm.amount" placeholder="0.00" type="number" step="0.01" class="amount-input">
                     <template #prefix>¥</template>
                 </el-input>
             </el-form-item>
@@ -342,7 +340,7 @@ const goToRepair = async () => {
 
 //缴费模块
 const goToPayment = () => {
-    if (!showcard) {
+    if (showcard.value != 'occupied') {
         ElMessage.warning('您还未租房！')
         return;
     }
@@ -400,8 +398,10 @@ const handleClose = () => {
             closeDrawer();
         })
 }
+
+//合同模块
 const goToContract = async () => {
-    if (!showcard) {
+    if (showcard != 'occupied') {
         ElMessage.warning('您还未租房！')
         return;
     }
@@ -421,6 +421,8 @@ const goToContract = async () => {
     houseData.value = resHouse.data.data;
     dialogContractVisible.value = true;
 }
+
+//报修模块
 const submitRepair = async () => {
     if (repairForm.value.house_id === null || repairForm.value.description === null) {
         ElMessage.warning('请填写完整的报修信息');
@@ -461,19 +463,24 @@ onMounted(async () => {
         }
         userInfo.value = user.data.data;
 
-        // //获取用户合同
-        // const leaseContract = await api.post('leaseContract/getActiveLeaseContractByUserId', {
-        //     user_id: userInfo.value.id
-        // });
-        // if (leaseContract.data.data != null) {
-        //     showcard.value = 'contract';
-        // }
-
         //获取用户房屋信息
         const waitingOrder = await api.post('house/getByOwnerId');
         if (waitingOrder.data.data != null) {
             house.value = waitingOrder.data.data
-            showcard.value = waitingOrder.data.data.status;
+            showcard.value = 'waiting';
+        }
+
+        //获取用户合同
+        const leaseContract = await api.post('leaseContract/getActiveLeaseContractByUserId', {
+            user_id: userInfo.value.id
+        });
+        if (leaseContract.data.data != null) {
+            showcard.value = 'occupied';
+
+            //获取报修记录
+            const repairList = await api.get(`repair/selectRepairByHouseId?house_id=${house.value.id}`)
+            console.log()
+            repairProgress.value = repairList.data.data
         }
 
         //获取订单信息
@@ -484,10 +491,7 @@ onMounted(async () => {
             item.due_date = dayjs(item.due_date).format('YYYY-MM-DD');
         });
 
-        //获取报修记录
-        const repairList = await api.get(`repair/selectRepairByHouseId?house_id=${house.value.id}`)
-        console.log()
-        repairProgress.value = repairList.data.data
+
     } catch (error) {
         console.error('请求出错:', error);
     } finally {
