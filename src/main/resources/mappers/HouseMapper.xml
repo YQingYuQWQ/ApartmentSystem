@@ -4,8 +4,30 @@
 <mapper namespace="com.apartmentsystem.mapper.HouseMapper">
 
     <insert id="insertHouse">
-        INSERT INTO house (house_number, building_name, floor, owner_id, status, created_at, updated_at, water_fee, power_fee, price, area, images, images_info) VALUES
-        (#{house_number}, #{building_name}, #{floor}, #{owner_id}, #{status}, NOW(), NOW(), #{water_fee}, #{power_fee}, #{price}, #{area}, #{images}, #{images_info})
+        INSERT INTO house
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            house_number, building_name, floor,
+            <if test="owner_id != null">owner_id,</if>
+            status, created_at, updated_at,
+            <if test="water_fee != null">water_fee,</if>
+            <if test="power_fee != null">power_fee,</if>
+            <if test="price != null">price,</if>
+            <if test="area != null">area,</if>
+            <if test="images != null">images,</if>
+            <if test="images_info != null">images_info,</if>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{house_number}, #{building_name}, #{floor},
+            <if test="owner_id != null">#{owner_id},</if>
+            #{status}, NOW(), NOW(),
+            <if test="water_fee != null">#{water_fee},</if>
+            <if test="power_fee != null">#{power_fee},</if>
+            <if test="price != null">#{price},</if>
+            <if test="area != null">#{area},</if>
+            <if test="images != null">#{images},</if>
+            <if test="images_info != null">#{images_info},</if>
+        </trim>
     </insert>
     <update id="updateOwnerByHouseNumber">
         UPDATE house SET owner_id = #{owner_id}, updated_at = NOW() WHERE house_number = #{house_number}
@@ -24,6 +46,9 @@
     </update>
     <update id="updateStatusByHouseId">
         UPDATE house SET status = #{status}, updated_at = NOW() WHERE id = #{id}
+    </update>
+    <update id="updateHouseInfoByHouseNumber">
+        UPDATE house SET building_name = #{building_name}, floor = #{floor}, owner_id = #{owner_id}, status = #{status}, price = #{price}, deposit = #{deposit}, area = #{area}, images = #{images}, images_info = #{images_info}, water_fee = #{water_fee}, power_fee = #{power_fee}, updated_at = NOW() WHERE house_number = #{house_number}
     </update>
     <delete id="deleteHouseByHouseNumber">
         DELETE FROM house WHERE house_number = #{house_number}

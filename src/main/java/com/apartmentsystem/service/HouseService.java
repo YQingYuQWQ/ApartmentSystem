@@ -14,6 +14,7 @@ public interface HouseService {
     void deleteHouseByHouseNumber(String house_number);
     void updateWaterFeeByHouseNumber(String house_number, BigDecimal water_fee);
     void updatePowerFeeByHouseNumber(String house_number, BigDecimal power_fee);
+    void updateHouseInfoByHouseNumber(House house);
     House getHouseByHouseNumber(String house_number);
     House getHouseById(int id);
     House getHouseByOwnerId(int owner_id);

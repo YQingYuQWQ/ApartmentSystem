@@ -18,7 +18,7 @@ public class HouseMapperTest {
     public void testinsertHouse() {
         House house = new House();
         house.setHouse_number("304");
-        house.setBuilding_name("体育楼");
+        house.setBuilding_name("乐乎公寓A座");
         house.setFloor(1);
         house.setStatus("vacant");
         house.setArea(18);

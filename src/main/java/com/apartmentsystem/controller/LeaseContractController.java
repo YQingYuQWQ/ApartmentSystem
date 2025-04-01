@@ -13,16 +13,31 @@ public class LeaseContractController {
     @Autowired
     private LeaseContractServiceImpl leaseContractServiceImpl;
 
+
+    /**
+     * Get active lease contract by user id
+     * @param leaseContract lease contract
+     * @return Result
+     */
     @PostMapping("/getActiveLeaseContractByUserId")
     public Result getActiveLeaseContractByUserId(@RequestBody LeaseContract leaseContract) {
         return Result.success(leaseContractServiceImpl.selectActiveLeaseContractByUserId(leaseContract.getUser_id()));
     }
 
+    /**
+     * insert lease contract
+     * @param leaseContract lease contract
+     * @return Result
+     */
     @PostMapping("/insertLeaseContract")
     public Result insertLeaseContract(@RequestBody LeaseContract leaseContract) {
         return Result.success(leaseContractServiceImpl.insertLeaseContract(leaseContract));
     }
 
+    /**
+     * Get all lease contract
+     * @return Result
+     */
     @PostMapping("/getAllLeaseContract")
     public Result getAllLeaseContract() {
         return Result.success(leaseContractServiceImpl.selectAllLeaseContract());

@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.*;
 public class HouseController {
     @Autowired
     private HouseServiceImpl houseServiceImpl;
-    @Autowired
-    private LogServiceImpl logServiceImpl;
 
     @PostMapping("/insert")
     public Result insertHouse(@RequestBody House house) {
@@ -35,6 +33,12 @@ public class HouseController {
     public Result updateStatusByHouseNumber(@RequestParam String house_number,
                                             @RequestParam String status) {
         houseServiceImpl.updateStatusByHouseNumber(house_number, status);
+        return Result.success();
+    }
+
+    @PostMapping("/updateInfoByHouseNumber")
+    public Result updateHouseInfo(@RequestBody House house) {
+        houseServiceImpl.updateHouseInfoByHouseNumber(house);
         return Result.success();
     }
 

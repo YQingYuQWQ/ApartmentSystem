@@ -3,6 +3,7 @@ package com.apartmentsystem.mapper;
 import com.apartmentsystem.entity.House;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -20,7 +21,7 @@ public interface HouseMapper {
     void deleteHouseByHouseNumber(@Param("house_number") String house_number);
     void updateWaterFeeByHouseNumber(@Param("house_number") String house_number, @Param("water_fee") BigDecimal water_fee);
     void updatePowerFeeByHouseNumber(@Param("house_number") String house_number, @Param("power_fee") BigDecimal power_fee);
+    void updateHouseInfoByHouseNumber(House house);
     List<House> getHouseList();
     List<House> showHouseList();
-
 }

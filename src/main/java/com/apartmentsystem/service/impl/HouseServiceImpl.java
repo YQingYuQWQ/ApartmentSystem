@@ -25,7 +25,6 @@ public class HouseServiceImpl implements HouseService {
             throw new RuntimeException("房屋已存在");
         if(house.getHouse_number()==null||house.getBuilding_name()==null||house.getStatus()==null)
             throw new RuntimeException("房屋信息不完整");
-
         logServiceImpl.insertLog(UserHolder.getUser().getId(), "insert house " + "house_number: " +house.getHouse_number()+ " building_name: "+house.getBuilding_name()+" floor: "+house.getFloor());
         houseMapper.insertHouse(house);
     }
@@ -35,7 +34,7 @@ public class HouseServiceImpl implements HouseService {
         House house = houseMapper.getHouseByHouseNumber(house_number);
         if(house==null)
             throw new RuntimeException("房屋不存在");
-        logServiceImpl.insertLog(UserHolder.getUser().getId(), "update house owner" + "house_number: "+house_number+" owner_id: "+owner_id);
+        //logServiceImpl.insertLog(UserHolder.getUser().getId(), "update house owner" + "house_number: "+house_number+" owner_id: "+owner_id);
         houseMapper.updateOwnerByHouseNumber(house_number, owner_id);
     }
 
@@ -44,8 +43,8 @@ public class HouseServiceImpl implements HouseService {
         House house = houseMapper.getHouseByHouseNumber(house_number);
         if(house==null)
             throw new RuntimeException("房屋不存在");
-        if(!Objects.equals(status, "occupied") && !Objects.equals(status, "vacant") && !Objects.equals(status, "under_maintenance") && !Objects.equals(status, "booked"))
-            throw new RuntimeException("房屋状态有误");
+//        if(!Objects.equals(status, "occupied") && !Objects.equals(status, "vacant") && !Objects.equals(status, "under_maintenance") && !Objects.equals(status, "booked"))
+//            throw new RuntimeException("房屋状态有误");
 //        logServiceImpl.insertLog(UserHolder.getUser().getId(), "update house status" + "house_number: "+house_number+" status: "+status);
         houseMapper.updateStatusByHouseNumber(house_number, status);
     }
@@ -83,6 +82,17 @@ public class HouseServiceImpl implements HouseService {
             throw new RuntimeException("房屋不存在");
         logServiceImpl.insertLog(UserHolder.getUser().getId(), "update house power fee" + "house_number: "+house_number+" power_fee: "+power_fee);
         houseMapper.updatePowerFeeByHouseNumber(house_number, power_fee);
+    }
+
+    @Override
+    public void updateHouseInfoByHouseNumber(House house) {
+        if(1 == UserHolder.getUser().getRole())
+            throw new RuntimeException("权限不足");
+        House house1 = houseMapper.getHouseByHouseNumber(house.getHouse_number());
+        if(null == house1)
+            throw new RuntimeException("房屋不存在");
+        logServiceImpl.insertLog(UserHolder.getUser().getId(), "update house info" + "house_number: "+house.getHouse_number());
+        houseMapper.updateHouseInfoByHouseNumber(house);
     }
 
     @Override
