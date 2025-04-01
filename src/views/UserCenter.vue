@@ -10,6 +10,10 @@
                     <el-tag type="success" size="small">普通用户</el-tag>
                 </p>
             </div>
+            <div class="user-actions" style="margin-left: auto;">
+                <el-button type="primary" plain @click="goToHome">返回主页</el-button>
+                <el-button type="danger" plain @click="logOut">退出登录</el-button>
+            </div>
         </div>
 
         <!-- 主功能导航 -->
@@ -286,6 +290,7 @@ const getTypeTag = (type) => {
             return 'default';
     }
 };
+
 const getTypeLabel = (type) => {
     switch (type) {
         case 'water':
@@ -315,6 +320,10 @@ const statusTypeMap = {
 }
 
 const goToHome = () => router.push('/')
+const logOut = () => {
+  localStorage.removeItem('token');
+  router.push('/login');
+};
 const goToNotice = async () => {
     try {
         const res = await api.post('announcement/getAllAnnouncement');
@@ -401,7 +410,8 @@ const handleClose = () => {
 
 //合同模块
 const goToContract = async () => {
-    if (showcard != 'occupied') {
+    console.log(showcard.value)
+    if (showcard.value != 'occupied') {
         ElMessage.warning('您还未租房！')
         return;
     }
@@ -479,7 +489,6 @@ onMounted(async () => {
 
             //获取报修记录
             const repairList = await api.get(`repair/selectRepairByHouseId?house_id=${house.value.id}`)
-            console.log()
             repairProgress.value = repairList.data.data
         }
 

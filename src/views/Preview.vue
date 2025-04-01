@@ -142,7 +142,7 @@ onMounted(() => {
     .then(response => {
       houses.value = response.data.data.map(house => {
         house.location = ` ${house.building_name} ${house.floor}层 ${house.house_number}`;
-        house.images = house.images.split(',');
+        house.images = house.images ? house.images.split(',') : [];
         return house;
       });
     })
