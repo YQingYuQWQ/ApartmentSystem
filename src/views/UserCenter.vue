@@ -2,7 +2,23 @@
     <div class="user-center-container" v-loading.fullscreen.lock="loading">
         <!-- 顶部用户信息栏 -->
         <div class="user-header">
-            <el-avatar :size="80" :src="userInfo.photo" class="user-avatar" />
+            <div class="avatar-container">
+                <div class="avatar-wrapper" @mouseenter="showUpload = true" @mouseleave="showUpload = false">
+                    <!-- 正常状态显示头像 -->
+                    <el-avatar :size="80" :src="userInfo.photo" class="user-avatar"
+                        :class="{ 'avatar-hover': showUpload }" />
+
+                    <!-- 悬停时显示上传按钮 -->
+                    <el-upload action="/api/upload-avatar" :show-file-list="false" :on-success="handleAvatarUpload"
+                        :before-upload="beforeAvatarUpload" class="upload-wrapper">
+                        <div class="upload-mask" v-show="showUpload">
+                            <el-icon class="upload-icon" color="#ff0000">
+                                <Plus />
+                            </el-icon>
+                        </div>
+                    </el-upload>
+                </div>
+            </div>
             <div class="user-info">
                 <h2>{{ userInfo.nick_name }}</h2>
                 <p class="meta-info">
@@ -243,16 +259,18 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
-import { ElMessage, ElLoading, ElMessageBox } from 'element-plus'
+import { ElMessage, ElLoading, ElMessageBox  } from 'element-plus'
 import router from '@/router/index'
 import api from '@/config/axios'
 import dayjs from 'dayjs'
-import { House, Money, Bell, Tools, Document, Clock, Memo } from '@element-plus/icons-vue'
+
+import { House, Money, Bell, Tools, Document, Clock, Memo, Plus } from '@element-plus/icons-vue'
 
 const token = ref('')
 const userInfo = ref({})
 const paymentForm = ref({})
 const announcements = ref({});
+const showUpload = ref(false)
 const repairForm = ref({
     house_id: '',
     description: '',
@@ -321,9 +339,26 @@ const statusTypeMap = {
 
 const goToHome = () => router.push('/')
 const logOut = () => {
-  localStorage.removeItem('token');
-  router.push('/login');
+    localStorage.removeItem('token');
+    router.push('/login');
 };
+const beforeAvatarUpload = (rawFile) => {
+  const allowedTypes = ['image/*']
+  const maxSize = 2
+
+  if (!allowedTypes.includes(rawFile.type)) {
+    ElMessage.error('只允许上传图片类型!')
+    return false
+  }
+
+  if (rawFile.size / 1024 / 1024 > maxSize) {
+    ElMessage.error(`图片大小不能超过 ${maxSize}MB!`)
+    return false
+  }
+
+  return true
+}
+
 const goToNotice = async () => {
     try {
         const res = await api.post('announcement/getAllAnnouncement');
@@ -525,8 +560,110 @@ onMounted(async () => {
         margin-bottom: 30px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
+        .avatar-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            cursor: pointer;
+        }
+
         .user-avatar {
-            margin-right: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            transition: all 0.3s ease;
+        }
+
+        .avatar-hover {
+            filter: grayscale(50%);
+            opacity: 0.7;
+        }
+
+        .upload-mask {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .upload-icon {
+            font-size: 24px;
+            color: white;
+        }
+
+        ::v-deep .el-upload {
+            display: block;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        ::v-deep .el-upload:hover {
+            opacity: 1;
+        }
+
+        .avatar-hover {
+            filter: grayscale(50%);
+            opacity: 0.7;
+        }
+
+        .upload-mask {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .upload-icon {
+            font-size: 24px;
+            color: white;
+        }
+
+        ::v-deep .el-upload {
+            display: block;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        ::v-deep .el-upload:hover {
+            opacity: 1;
         }
 
         .user-info {
