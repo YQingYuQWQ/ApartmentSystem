@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +28,8 @@ public class UserServiceImpl implements UserService {
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private LogServiceImpl logServiceImpl;
+    @Autowired
+    private UploadServiceImpl uploadServiceImpl;
 
     @Override
     public User getUserByUserName(String userName) {
@@ -133,6 +135,19 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("权限不足");
         userMapper.updateUserById(user);
     }
+
+    @Override
+    public void updateUserAvatar(MultipartFile file) {
+        User user = userMapper.getUserByUserName(UserHolder.getUser().getUsername());
+
+        if(null != file) {
+            user.setAvatar(file);
+            user.setPhoto(uploadServiceImpl.uploadImage(user.getAvatar()).getUrl());;
+        }
+
+        userMapper.updateUserAvatarById(user);
+    }
+
 
     @Override
     public void createUserById(User user) {

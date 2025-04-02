@@ -6,7 +6,7 @@
         INSERT INTO users (username, password, email, phone, role, created_at, updated_at) VALUES (#{username}, #{password}, #{email}, #{phone}, #{role}, NOW(), NOW())
     </insert>
     <insert id="insertNormalUser">
-        INSERT INTO users (username, password, email, phone, role, created_at, updated_at, photo, nick_name) VALUES (#{username}, #{password}, #{email}, #{phone}, '1', NOW(), NOW(), "https://www.helloimg.com/i/2025/01/23/6792465d7599b.gif", #{nick_name})
+        INSERT INTO users (username, password, email, phone, role, created_at, updated_at, photo, nick_name) VALUES (#{username}, #{password}, #{email}, #{phone}, '1', NOW(), NOW(), "http://ddns.lyzd.fun:52333/i/2025/04/01/ss9g9f.jpeg", #{nick_name})
     </insert>
     <insert id="createUser">
         INSERT INTO users (username, password, email, phone, role, created_at, updated_at, photo, nick_name) VALUES (#{username}, #{password}, #{email}, #{phone}, #{role}, NOW(), NOW(), #{photo}, #{nick_name})
@@ -17,6 +17,9 @@
     </update>
     <update id="updateUserById">
         update users set username = #{username}, email = #{email}, phone = #{phone}, role = #{role}, nick_name = #{nick_name}, updated_at = NOW() where id = #{id}
+    </update>
+    <update id="updateUserAvatarById">
+        update users set photo = #{photo} where id = #{id}
     </update>
     <delete id="deleteUserById">
         delete from users where id = #{id}

@@ -16,6 +16,7 @@ public interface UserMapper extends BaseMapper<User> {
     User getUserAllByUserName(@Param("username") String username);
     //根据id更新用户密码
     Boolean updateUserPasswordById(@Param("id") int id, @Param("password") String password);
+    Boolean updateUserAvatarById(User user);
     Boolean insertUser(@Param("username") String username, @Param("password") String password, @Param("email") String email, @Param("phone") String phone, @Param("role") int role);
     Boolean insertNormalUser(User user);
     List<User> getAllUser();

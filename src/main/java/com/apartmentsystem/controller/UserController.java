@@ -5,6 +5,7 @@ import com.apartmentsystem.entity.User;
 import com.apartmentsystem.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -50,6 +51,12 @@ public class UserController {
     @PostMapping("/deleteUser")
     public Result deleteUser(@RequestBody User user) {
         userServiceImpl.deleteUserById(user.getId());
+        return Result.success();
+    }
+
+    @PostMapping("/updateUserAvatar")
+    public Result updateUserAvatar(@RequestParam("avatar") MultipartFile file) {
+        userServiceImpl.updateUserAvatar(file);
         return Result.success();
     }
 }

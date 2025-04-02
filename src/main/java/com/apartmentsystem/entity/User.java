@@ -3,6 +3,7 @@ package com.apartmentsystem.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @AllArgsConstructor
@@ -20,4 +21,5 @@ public class User {
     private String updated_at;
     private String photo;
     private String nick_name;
+    private MultipartFile avatar;
 }

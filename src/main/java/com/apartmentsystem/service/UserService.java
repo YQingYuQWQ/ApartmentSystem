@@ -1,7 +1,7 @@
 package com.apartmentsystem.service;
 
 import com.apartmentsystem.entity.User;
-import org.w3c.dom.stylesheets.LinkStyle;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -14,6 +14,7 @@ public interface UserService {
     User getUserInfo();
     List<User> getAllUser();
     void updateUserById(User user);
+    void updateUserAvatar(MultipartFile file);
     void createUserById(User user);
     void deleteUserById(int id);
 }
