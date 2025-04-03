@@ -9,8 +9,7 @@
                         :class="{ 'avatar-hover': showUpload }" />
 
                     <!-- 悬停时显示上传按钮 -->
-                    <el-upload action="/api/upload-avatar" :show-file-list="false" :on-success="handleAvatarUpload"
-                        :before-upload="beforeAvatarUpload" class="upload-wrapper">
+                    <el-upload :auto-upload="false" :show-file-list="false" :on-change="handleFileChange" class="upload-wrapper">
                         <div class="upload-mask" v-show="showUpload">
                             <el-icon class="upload-icon" color="#ff0000">
                                 <Plus />
@@ -22,7 +21,7 @@
             <div class="user-info">
                 <h2>{{ userInfo.nick_name }}</h2>
                 <p class="meta-info">
-                    <span>ID: {{ userInfo.username }}</span>
+                    <span style="margin-left: 20px;">ID: {{ userInfo.username }}</span>
                     <el-tag type="success" size="small">普通用户</el-tag>
                 </p>
             </div>
@@ -153,8 +152,8 @@
                         </div>
                     </template>
                     <el-timeline>
-                        <el-timeline-item v-for="(item, index) in repairProgress" :key="index" :timestamp="item.created_at"
-                            placement="top">
+                        <el-timeline-item v-for="(item, index) in repairProgress" :key="index"
+                            :timestamp="item.created_at" placement="top">
                             <el-card shadow="hover">
                                 <h4>{{ item.description }}</h4>
                                 <el-tag :type="statusTypeMap[item.status]">
@@ -169,7 +168,8 @@
     </div>
     <!-- 缴费抽屉 -->
     <el-drawer title="缴费管理" size="400px" v-model="drawerVisible" :before-close="handleClose" class="payment-drawer">
-        <el-form :model="paymentForm" ref="paymentFormRef" label-position="top" label-width="120px" class="payment-form">
+        <el-form :model="paymentForm" ref="paymentFormRef" label-position="top" label-width="120px"
+            class="payment-form">
             <!-- 缴费类型 -->
             <el-form-item label="缴费类型" prop="paymentType"
                 :rules="[{ required: true, message: '请选择缴费类型', trigger: 'change' }]">
@@ -185,7 +185,8 @@
                 { required: true, message: '请输入金额', trigger: 'blur' },
                 { pattern: /^\d+(\.\d{1,2})?$/, message: '请输入有效金额格式', trigger: 'blur' }
             ]">
-                <el-input v-model="paymentForm.amount" placeholder="0.00" type="number" step="0.01" class="amount-input">
+                <el-input v-model="paymentForm.amount" placeholder="0.00" type="number" step="0.01"
+                    class="amount-input">
                     <template #prefix>¥</template>
                 </el-input>
             </el-form-item>
@@ -259,7 +260,7 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
-import { ElMessage, ElLoading, ElMessageBox  } from 'element-plus'
+import { ElMessage, ElLoading, ElMessageBox } from 'element-plus'
 import router from '@/router/index'
 import api from '@/config/axios'
 import dayjs from 'dayjs'
@@ -271,6 +272,10 @@ const userInfo = ref({})
 const paymentForm = ref({})
 const announcements = ref({});
 const showUpload = ref(false)
+const selectedFile = ref(null)
+const allowedFileTypes = ['image/jpeg', 'image/png', 'image/webp']
+const allowedExtensions = ['JPG', 'PNG', 'WEBP']
+const maxSizeMB = 2
 const repairForm = ref({
     house_id: '',
     description: '',
@@ -342,21 +347,40 @@ const logOut = () => {
     localStorage.removeItem('token');
     router.push('/login');
 };
-const beforeAvatarUpload = (rawFile) => {
-  const allowedTypes = ['image/*']
-  const maxSize = 2
 
-  if (!allowedTypes.includes(rawFile.type)) {
-    ElMessage.error('只允许上传图片类型!')
+//上传图片前校验
+const handleFileChange = (uploadFile) => {
+  if (!allowedFileTypes.includes(uploadFile.raw.type)) {
+    ElMessage.error(`仅支持 ${allowedExtensions.join('、')} 格式`)
     return false
   }
 
-  if (rawFile.size / 1024 / 1024 > maxSize) {
-    ElMessage.error(`图片大小不能超过 ${maxSize}MB!`)
+  if (uploadFile.raw.size / 1024 / 1024 > maxSizeMB) {
+    ElMessage.error(`文件大小不能超过 ${maxSizeMB}MB`)
     return false
   }
-
-  return true
+  selectedFile.value = uploadFile.raw
+  uploadAvatar()
+}
+//校验通过后上传
+const uploadAvatar = async () => {
+  if (!selectedFile.value) return
+  const formData = new FormData()
+  formData.append('avatar', selectedFile.value)
+  try {
+    const response = await api.post('user/updateUserAvatar',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      }
+    )
+    ElMessage.success('上传成功')
+    window.location.reload();
+  } catch (error) {
+    ElMessage.error(`上传失败: ${error.message}`)
+  }
 }
 
 const goToNotice = async () => {

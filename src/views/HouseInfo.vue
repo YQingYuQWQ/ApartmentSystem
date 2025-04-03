@@ -3,8 +3,8 @@
         <!-- 图片轮播区 -->
         <div class="carousel-section">
             <el-carousel :interval="5000" height="500px" indicator-position="outside">
-                <el-carousel-item v-for="(img, index) in roomData.images" :key="index">
-                    <el-image :src="img" fit="cover" class="carousel-image" :preview-src-list="roomData.images" />
+                <el-carousel-item v-for="(img, index) in roomData.images_info" :key="index">
+                    <el-image :src="img" fit="cover" class="carousel-image" :preview-src-list="roomData.images_info" />
                 </el-carousel-item>
             </el-carousel>
             <el-tag class="status-tag" :type="statusType[roomData.status]" effect="dark">
@@ -200,21 +200,28 @@ onMounted(() => {
         status: route.query.status,
         area: route.query.area,
         price: route.query.price,
-        images: JSON.parse(route.query.images),
+        images_info: JSON.parse(route.query.images_info),
         facilities: ['独立卫浴', '智能门锁', '高速WiFi', '空调', '书桌椅']
     }
 
-
+    console.log(roomData.value.images_info[1])
     pageloading.value = false
 })
 </script>
 
 <style lang="scss" scoped>
 .detail-container {
-    max-width: 1400px;
+    max-width: 95%; // 改为百分比
     margin: 0 auto;
-    padding: 20px;
-    opacity: 0.9;
+    padding: 2vw; // 使用视窗单位
+    min-height: 100vh; /* 确保容器至少占满视口高度 */
+    overflow-x: hidden; /* 防止横向滚动 */
+    opacity: 1.0;
+    
+    @media (max-width: 768px) {
+        padding: 3vw;
+    }
+
 
     .carousel-section {
         position: relative;
@@ -229,6 +236,7 @@ onMounted(() => {
             z-index: 2;
             font-size: 16px;
             padding: 8px 16px;
+            opacity: 0.9;
         }
     }
 
@@ -237,6 +245,7 @@ onMounted(() => {
         grid-template-columns: 1fr 350px;
         gap: 30px;
         margin-top: 30px;
+        opacity: 0.9;
 
         @media (max-width: 992px) {
             grid-template-columns: 1fr;
@@ -244,6 +253,8 @@ onMounted(() => {
     }
 
     .info-section {
+        opacity: 0.9;
+
         .room-title {
             font-size: 28px;
             color: #303133;
@@ -276,6 +287,7 @@ onMounted(() => {
         }
 
         .price-card {
+            opacity: 0.9;
             margin-bottom: 25px;
             border-radius: 12px;
 
@@ -300,6 +312,8 @@ onMounted(() => {
         }
 
         .facility-section {
+            opacity: 0.9;
+
             h3 {
                 font-size: 20px;
                 margin-bottom: 15px;
@@ -329,6 +343,8 @@ onMounted(() => {
     }
 
     .booking-section {
+        opacity: 0.9;
+
         .booking-card {
             position: sticky;
             top: 20px;

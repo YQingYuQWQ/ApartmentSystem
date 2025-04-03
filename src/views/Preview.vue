@@ -1,8 +1,5 @@
 <template>
   <div class="home-container" v-loading.fullscreen.lock="loading">
-    <!-- 渐变背景层 -->
-    <div class="background-layer"></div>
-
     <!-- 导航栏 -->
     <nav class="main-nav">
       <div class="nav-brand">
@@ -15,6 +12,8 @@
         <div v-else class="user-info">
           <el-avatar :src="user.photo" size="default"></el-avatar>
           <span class="user-nickname">{{ user.nick_name }}</span>
+          <el-button type="primary" round @click="goToProSuperManage" v-if="user.role = '0'">超管页面</el-button>
+          <el-button type="primary" round @click="goToProManage" v-if="user.role != '1'">物业管理</el-button>
           <el-button type="primary" round @click="goToProfile">个人中心</el-button>
           <el-button type="warning" round @click="logOut">退出</el-button>
         </div>
@@ -85,6 +84,8 @@
       </div>
     </main>
   </div>
+  <div class="background-layer">
+  </div>
 </template>
 
 <script setup>
@@ -122,12 +123,14 @@ const handleBook = (house) => {
       status: house.status,
       area: house.area,
       price: house.price,
-      images: JSON.stringify(house.images)
+      images_info: JSON.stringify(house.images_info)
     }
   });
 }
 const goToLogin = () => router.push('/login')
 const goToRegister = () => router.push('/register')
+const goToProSuperManage = () => router.push('/supermanagercenter')
+const goToProManage = () => router.push('/managercenter')
 const goToProfile = () => router.push('/usercenter')
 const logOut = () => {
   localStorage.removeItem('token');
@@ -143,6 +146,7 @@ onMounted(() => {
       houses.value = response.data.data.map(house => {
         house.location = ` ${house.building_name} ${house.floor}层 ${house.house_number}`;
         house.images = house.images ? house.images.split(',') : [];
+        house.images_info = house.images_info ? house.images_info.split(',') : [];
         return house;
       });
     })
@@ -222,7 +226,8 @@ onMounted(() => {
     color: #2c3e50;
 
     .logo {
-      height: 40px;
+      height: 70px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       width: auto;
     }
   }

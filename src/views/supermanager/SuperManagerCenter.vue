@@ -4,9 +4,9 @@
     <header class="admin-header">
       <div class="header-content">
         <h1 class="system-title">用户管理系统</h1>
-        <div class="header-actions">
-          <el-switch v-model="isDark" inline-prompt active-text="暗" inactive-text="亮" class="theme-switch" />
-        </div>
+        <el-button type="primary" round @click="goToHome">
+          返回主页
+        </el-button>
       </div>
     </header>
 
@@ -123,20 +123,19 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useDark, useToggle } from '@vueuse/core'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import dayjs from 'dayjs'
 import api from '@/config/axios'
+import { Plus } from '@element-plus/icons-vue'
 import router from '@/router'
-
-const isDark = useDark()
-const toggleDark = useToggle(isDark)
 
 const users = ref([])
 const loading = ref(true)
 const searchKey = ref('')
 const currentPage = ref(1)
 const pageSize = 10
+
+const goToHome = () => router.push('/')
 
 const roleMap = {
   0: '超级管理员',
@@ -182,7 +181,10 @@ const formRules = {
     { type: 'email', message: '邮箱格式不正确', trigger: ['blur', 'change'] }
   ],
   phone: [
-    { pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确', trigger: 'blur' }
+    { required: true, pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确', trigger: 'blur' }
+  ],
+  nick_name: [
+    { required: true, }
   ]
 }
 
@@ -301,12 +303,9 @@ const paginatedData = computed(() =>
   background: var(--el-bg-color-page);
   transition: background 0.3s ease;
 
-  &.dark-mode {
-    --el-bg-color-page: #1a1a1a;
-    --el-text-color-primary: rgba(255, 255, 255, 0.9);
-    --el-border-color: rgba(255, 255, 255, 0.1);
-  }
 }
+
+
 
 .admin-header {
   padding: 0 24px;
