@@ -63,7 +63,7 @@
         SELECT * FROM house
     </select>
     <select id="showHouseList" resultType="com.apartmentsystem.entity.House">
-        SELECT id, house_number, building_name, floor, status, price, area, images FROM house
+        SELECT id, house_number, building_name, floor, status, price, area, images, images_info FROM house
     </select>
     <select id="getStatusByHouseNumber" resultType="java.lang.String">
         SELECT status FROM house WHERE house_number = #{house_number}

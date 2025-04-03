@@ -40,7 +40,7 @@
         SELECT house_number FROM fee WHERE fee_number = #{fee_number}
     </select>
     <select id="getFeeByUserId" resultType="com.apartmentsystem.entity.Fee">
-        SELECT * FROM fee WHERE user_id = #{user_id}
+        SELECT * FROM fee WHERE user_id = #{user_id} order by created_at desc
     </select>
     <select id="getAllFee" resultType="com.apartmentsystem.entity.Fee">
         SELECT * FROM fee
