@@ -12,8 +12,8 @@
         <div v-else class="user-info">
           <el-avatar :src="user.photo" size="default"></el-avatar>
           <span class="user-nickname">{{ user.nick_name }}</span>
-          <el-button type="primary" round @click="goToProSuperManage" v-if="user.role = '0'">超管页面</el-button>
-          <el-button type="primary" round @click="goToProManage" v-if="user.role != '1'">物业管理</el-button>
+          <el-button type="primary" round @click="goToProSuperManage" v-if=" user.role == '0'">超管页面</el-button>
+          <el-button type="primary" round @click="goToProManage" v-if=" user.role != '1'">物业管理</el-button>
           <el-button type="primary" round @click="goToProfile">个人中心</el-button>
           <el-button type="warning" round @click="logOut">退出</el-button>
         </div>
@@ -162,6 +162,7 @@ onMounted(() => {
         if (response.data.code === 0) {
           showButtons.value = false;
           user.value = response.data.data;
+          console.log("角色编号是：" + user.value.role)
           return;
         }
       }).catch(error => {
