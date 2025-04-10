@@ -21,8 +21,9 @@
       <el-table-column prop="created_at" label="报修日期" />
       <el-table-column label="操作" width="180">
         <template #default="{ row }">
-          <el-button size="small" @click="handleEdit(row)">编辑</el-button>
-          <el-button size="small" type="danger" @click="handleDelete(row)">删除</el-button>
+          <el-button size="small" @click="handleEdit(row)" type="primary" v-if="row.status == 'pending'">接受</el-button>
+          <el-button size="small" @click="handleSuccess(row)" type="success"
+            v-if="row.status == 'in_progress'">完成</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -85,43 +86,22 @@ const statusText = {
   completed: '已完成',
 };
 
-const handleEdit = (repair) => {
-  currentRepair.value = { ...repair };
-  dialogVisible.value = true;
-};
-
-const handleDelete = (repair) => {
-  const index = repairList.value.findIndex((item) => item.repair_number === repair.repair_number);
-  if (index !== -1) {
-    repairList.value.splice(index, 1);
-    ElMessage.success('删除成功');
+const handleSuccess = async (row) => {
+  const res = await api.post('repair/updateRepairStatusById', { 
+    ...row,
+    status: 'completed'
+   })
+  if (res.data.code != 0) {
+    ElMessage.error('状态更改错误：' + res.data.message)
+    return
   }
-};
-
-const handleSubmit = () => {
-  if (!currentRepair.value.description || !currentRepair.value.status || !currentRepair.value.date) {
-    ElMessage.error('请填写完整的报修信息');
-    return;
-  }
-  if (currentRepair.value.repair_number) {
-    // 编辑报修
-    const index = repairList.value.findIndex((item) => item.repair_number === currentRepair.value.repair_number);
-    if (index !== -1) {
-      repairList.value[index] = { ...currentRepair.value };
-      ElMessage.success('编辑成功');
-    }
-  } else {
-    // 新增报修
-    const newRepair = { ...currentRepair.value, repair_number: `R${(repairList.value.length + 1).toString().padStart(3, '0')}` };
-    repairList.value.push(newRepair);
-    ElMessage.success('新增成功');
-  }
-  dialogVisible.value = false;
-};
+  ElMessage.success('更新成功！')
+  fetchRepairs()
+}
 
 const fetchRepairs = async () => {
   const res = await api.get('repair/getAllRepairs')
-  if(res.data.code != 0 ){
+  if (res.data.code != 0) {
     ElMessage.error("获取保修信息错误: " + res.data.message)
     return
   }
