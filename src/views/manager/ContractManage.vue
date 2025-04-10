@@ -23,21 +23,47 @@
 
         <el-table-column label="房屋id" min-width="200">
           <template #default="{ row }">
-            <div class="house-info">
-              <el-icon>
-                <House />
-              </el-icon>
-              <span>{{ row.house_id }}</span>
-            </div>
+            <el-popover placement="top-start" trigger="hover" :width="300">
+              <template #reference>
+                <div class="house-info">
+                  <el-icon>
+                    <House />
+                  </el-icon>
+                  <span>{{ row.house_id }}</span>
+                </div>
+              </template>
+
+              <!-- 卡片内容 -->
+              <div class="house-card">
+                <div class="card-title">
+                  <el-icon>
+                    <House />
+                  </el-icon>
+                  <span>房屋详情</span>
+                </div>
+                <el-divider />
+                <div>房屋ID: {{ row.house_id }}</div>
+                <div>房间号: {{ row.house_number }}</div>
+              </div>
+            </el-popover>
           </template>
         </el-table-column>
 
         <el-table-column label="租户id" min-width="200">
           <template #default="{ row }">
-            <div class="tenant-info">
-              <el-avatar :size="32" :src="row.tenant_avatar" />
-              <span>{{ row.user_id }}</span>
-            </div>
+            <el-popover placement="top-start" trigger="hover" :width="300">
+              <template #reference>
+                <div class="tenant-info">
+                  <span>{{ row.user_id }}</span>
+                </div>
+              </template>
+              <div class="user-card">
+                <div>用户ID: {{ row.user_id }}</div>
+                <div>用户名: {{ row.username || '无' }}</div>
+                <div>电话: {{ row.phone || '无' }}</div>
+                <div>邮箱: {{ row.email || '无' }}</div>
+              </div>
+            </el-popover>
           </template>
         </el-table-column>
 
@@ -124,6 +150,10 @@ const searchKey = ref('')
 const dialogVisible = ref(false)
 const dialogMode = ref('create')
 const currentContract = ref(null)
+const houseIds = ref([])
+const userIds = ref([])
+const houseInfo = ref()
+const userInfo = ref()
 
 // 获取合同数据
 const fetchContracts = async () => {
@@ -131,16 +161,49 @@ const fetchContracts = async () => {
     loading.value = true
     const res = await api.post('leaseContract/getAllLeaseContract')
     if (res.data.code != 0) {
-      ElMessage.error('获取合同数据失败' + res.data.message)
+      ElMessage.error('获取合同数据失败: ' + res.data.message)
       return
     }
-    console.log(res.data.data)
-    contracts.value = res.data.data
-    total.value = res.data.data.length
+
+    const data = res.data.data
+    contracts.value = data
+    total.value = data.length
+
+    houseIds.value = [...new Set(data.map(item => item.house_id))]
+    userIds.value = [...new Set(data.map(item => item.user_id))]
+
   } catch (error) {
     ElMessage.error('获取合同数据失败')
   } finally {
     loading.value = false
+  }
+}
+
+//获取房屋数据
+const fetchHouseInfo = async () => {
+  try {
+    const res = await api.post('house/getByIds', houseIds.value)
+    if (res.data.code !== 0) {
+      ElMessage.error('获取房屋信息失败: ' + res.data.message)
+      return
+    }
+    houseInfo.value = res.data.data
+  } catch (error) {
+    ElMessage.error('获取房屋信息失败')
+  }
+}
+
+//获取用户数据
+const fetchUserInfo = async () => {
+  try {
+    const res = await api.post('user/getUserByIds' , userIds.value)
+    if (res.data.code !== 0) {
+      ElMessage.error('获取用户信息失败: ' + res.data.message)
+      return
+    }
+    userInfo.value = res.data.data
+  } catch (error) {
+    ElMessage.error('获取房屋信息失败')
   }
 }
 
@@ -162,9 +225,44 @@ const handleSearch = () => {
   fetchContracts()
 }
 
+const userMap = computed(() => {
+  const map = {}
+  userInfo.value.forEach(user => {
+    map[user.id] = user
+  })
+  return map
+})
+
+const houseMap = computed(() => {
+  const map = {}
+  houseInfo.value.forEach(house => {
+    map[house.id] = house
+  })
+  return map
+})
+
+const mergeContractData = () => {
+  contracts.value = contracts.value.map(contract => {
+    const user = userMap.value[contract.user_id] || {}
+    const house = houseMap.value[contract.house_id] || {}
+    return {
+      ...contract,
+      username: user.username,
+      phone: user.phone,
+      email: user.email,
+      house_number: house.house_number,
+    }
+  })
+}
+
 // 初始化加载
-onMounted(() => {
-  fetchContracts()
+onMounted( async () => {
+  loading.value = true
+  await fetchContracts()
+  await fetchHouseInfo()
+  await fetchUserInfo()
+  mergeContractData()
+  loading.value = false
 })
 </script>
 
@@ -189,6 +287,7 @@ onMounted(() => {
       }
     }
   }
+
 
   .data-card {
     border-radius: 12px;
@@ -232,6 +331,47 @@ onMounted(() => {
         display: flex;
         flex-direction: column;
         gap: 4px;
+      }
+
+      .user-card {
+        padding: 10px;
+        line-height: 1.8;
+      }
+
+      .user-card div {
+        margin-bottom: 4px;
+      }
+
+      .tenant-info {
+        cursor: pointer;
+        color: var(--el-color-primary);
+      }
+
+      .house-card {
+        padding: 10px;
+        line-height: 1.8;
+      }
+
+      .house-card div {
+        margin-bottom: 6px;
+      }
+
+      .card-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: bold;
+      }
+
+      .house-info {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+      }
+
+      .house-info:hover {
+        color: var(--el-color-primary);
       }
     }
   }

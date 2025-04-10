@@ -100,14 +100,6 @@
                         {{ formatDateTime(row.due_date) }}
                     </template>
                 </el-table-column>
-
-                <el-table-column label="操作" fixed="right" width="120">
-                    <template #default="{ row }">
-                        <el-button link type="primary" @click.stop="handleDetail(row)">
-                            详情
-                        </el-button>
-                    </template>
-                </el-table-column>
             </el-table>
 
             <!-- 分页 -->

@@ -226,16 +226,23 @@ const handleEdit = (house) => {
 
 // 删除房屋
 const handleDelete = (house) => {
-    const index = houseList.value.findIndex(item => item.house_number === house.house_number)
-    if (index !== -1) {
-        houseList.value.splice(index, 1)
-    }
+    currentHouse.value = { ...house }
+    api.post(`house/deleteByHouseNumber?house_number=${currentHouse.value.house_number}`)
+    .then(res => {
+        if (res.data.code === 0) {
+            ElMessage.success('删除成功')
+            fetchData()
+        } else {
+            ElMessage.error('删除失败:' + res.data.message)
+        }
+    })
 }
 
 // 提交房屋表单
 const handleSubmit = () => {
     if (houseStatus.value === 'add') {
-        api.post('house/insert', {...currentHouse.value,
+        api.post('house/insert', {
+            ...currentHouse.value,
             floor: currentHouse.value.floor,
             price: currentHouse.value.price,
             area: currentHouse.value.area,
@@ -257,7 +264,8 @@ const handleSubmit = () => {
         })
     }
     if (houseStatus.value === 'edit') {
-        api.post('house/updateInfoByHouseNumber', {...currentHouse.value,
+        api.post('house/updateInfoByHouseNumber', {
+            ...currentHouse.value,
             floor: currentHouse.value.floor,
             price: currentHouse.value.price,
             area: currentHouse.value.area,
