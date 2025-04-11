@@ -70,6 +70,6 @@ watch(
   color: #2c3e50;
 }
 html, body {
-  overflow: hidden; /* 隐藏浏览器滚动条 */
+  overflow: hidden;
 }
 </style>

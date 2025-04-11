@@ -4,12 +4,11 @@
         <div class="user-header">
             <div class="avatar-container">
                 <div class="avatar-wrapper" @mouseenter="showUpload = true" @mouseleave="showUpload = false">
-                    <!-- 正常状态显示头像 -->
                     <el-avatar :size="80" :src="userInfo.photo" class="user-avatar"
                         :class="{ 'avatar-hover': showUpload }" />
 
-                    <!-- 悬停时显示上传按钮 -->
-                    <el-upload :auto-upload="false" :show-file-list="false" :on-change="handleFileChange" class="upload-wrapper">
+                    <el-upload :auto-upload="false" :show-file-list="false" :on-change="handleFileChange"
+                        class="upload-wrapper">
                         <div class="upload-mask" v-show="showUpload">
                             <el-icon class="upload-icon" color="#ff0000">
                                 <Plus />
@@ -173,15 +172,17 @@
             <!-- 缴费类型 -->
             <el-form-item label="缴费类型" prop="paymentType"
                 :rules="[{ required: true, message: '请选择缴费类型', trigger: 'change' }]">
-                <el-select v-model="paymentForm.paymentType" placeholder="请选择缴费类型" class="full-width-select">
+                <el-select v-model="paymentForm.paymentType" placeholder="请选择缴费类型" class="full-width-select"
+                    @change="handlePaymentTypeChange">
                     <el-option label="水费" value="water" />
                     <el-option label="电费" value="electricity" />
                     <el-option label="物业费" value="property" />
+                    <el-option label="房租账单" value="rent" />
                 </el-select>
             </el-form-item>
 
-            <!-- 缴费金额 -->
-            <el-form-item label="缴费金额（元）" prop="amount" :rules="[
+            <!-- 普通缴费金额 -->
+            <el-form-item v-if="paymentForm.paymentType !== 'rent'" label="缴费金额（元）" prop="amount" :rules="[
                 { required: true, message: '请输入金额', trigger: 'blur' },
                 { pattern: /^\d+(\.\d{1,2})?$/, message: '请输入有效金额格式', trigger: 'blur' }
             ]">
@@ -189,6 +190,15 @@
                     class="amount-input">
                     <template #prefix>¥</template>
                 </el-input>
+            </el-form-item>
+
+            <!-- 房租账单选择 -->
+            <el-form-item v-if="paymentForm.paymentType === 'rent'" label="选择房租账单" prop="selectedRentBill"
+                :rules="[{ required: true, message: '请选择房租账单', trigger: 'change' }]">
+                <el-select v-model="paymentForm.selectedRentBill" placeholder="请选择房租账单" class="full-width-select">
+                    <el-option v-for="bill in rentBills" :key="bill.id" :label="`${bill.bill_start_date} - ${bill.bill_end_date}期账单`"
+                        :value="bill.id" />
+                </el-select>
             </el-form-item>
 
             <!-- 操作按钮 -->
@@ -202,7 +212,7 @@
     </el-drawer>
     <el-dialog v-model="dialogContractVisible" title="合同与房屋详情" width="600px">
         <el-descriptions title="合同信息" border>
-            <el-descriptions-item label="合同编号">{{ contractData.house_id }}</el-descriptions-item>
+            <el-descriptions-item label="房屋编号">{{ contractData.house_id }}</el-descriptions-item>
             <el-descriptions-item label="租客">{{ contractData.user_id }}</el-descriptions-item>
             <el-descriptions-item label="租金">{{ contractData.monthly_rent }} 元/月</el-descriptions-item>
             <el-descriptions-item label="开始日期">{{ contractData.start_date }}</el-descriptions-item>
@@ -289,7 +299,7 @@ const drawerVisible = ref(false)
 const dialogAnnounceMentVisible = ref(false);
 const dialogRepairVisible = ref(false);
 
-
+const rentBills = ref([])
 const recentBills = ref([])
 const contractData = ref([])
 const houseData = ref([])
@@ -350,37 +360,38 @@ const logOut = () => {
 
 //上传图片前校验
 const handleFileChange = (uploadFile) => {
-  if (!allowedFileTypes.includes(uploadFile.raw.type)) {
-    ElMessage.error(`仅支持 ${allowedExtensions.join('、')} 格式`)
-    return false
-  }
+    if (!allowedFileTypes.includes(uploadFile.raw.type)) {
+        ElMessage.error(`仅支持 ${allowedExtensions.join('、')} 格式`)
+        return false
+    }
 
-  if (uploadFile.raw.size / 1024 / 1024 > maxSizeMB) {
-    ElMessage.error(`文件大小不能超过 ${maxSizeMB}MB`)
-    return false
-  }
-  selectedFile.value = uploadFile.raw
-  uploadAvatar()
+    if (uploadFile.raw.size / 1024 / 1024 > maxSizeMB) {
+        ElMessage.error(`文件大小不能超过 ${maxSizeMB}MB`)
+        return false
+    }
+    selectedFile.value = uploadFile.raw
+    uploadAvatar()
 }
+
 //校验通过后上传
 const uploadAvatar = async () => {
-  if (!selectedFile.value) return
-  const formData = new FormData()
-  formData.append('avatar', selectedFile.value)
-  try {
-    const response = await api.post('user/updateUserAvatar',
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        }
-      }
-    )
-    ElMessage.success('上传成功')
-    window.location.reload();
-  } catch (error) {
-    ElMessage.error(`上传失败: ${error.message}`)
-  }
+    if (!selectedFile.value) return
+    const formData = new FormData()
+    formData.append('avatar', selectedFile.value)
+    try {
+        const response = await api.post('user/updateUserAvatar',
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            }
+        )
+        ElMessage.success('上传成功')
+        window.location.reload();
+    } catch (error) {
+        ElMessage.error(`上传失败: ${error.message}`)
+    }
 }
 
 const goToNotice = async () => {
@@ -414,48 +425,130 @@ const goToPayment = () => {
     }
     drawerVisible.value = true
 }
+// 通用支付函数
+const submitPaymentForm = (formHtml) => {
+    const formElement = document.createElement('div');
+    formElement.innerHTML = formHtml;
+    document.body.appendChild(formElement);
+
+    nextTick(() => {
+        const form = formElement.querySelector('form');
+        if (form) {
+            form.submit();
+        } else {
+            console.error('没有找到表单元素');
+        }
+    });
+};
+
+const handlePaymentSuccess = (formHtml) => {
+    loading.value = false;
+    ElMessage.success('预定成功，正在跳转支付宝支付页面，请及时支付！');
+    submitPaymentForm(formHtml);
+};
+
+const handlePaymentError = (error) => {
+    loading.value = false;
+    ElMessage.error('订单创建失败' + (error.response?.data?.message || error.message));
+};
+
+// 各支付类型处理函数
+const handleWaterPayment = async () => {
+    try {
+        const fee = await api.post('fee/createWaterFee', {
+            house_number: house.value.house_number,
+            amount: paymentForm.value.amount,
+            user_id: userInfo.value.id
+        });
+        
+        if (fee.data.code !== 0) {
+            throw new Error(fee.data.message);
+        }
+        
+        handlePaymentSuccess(fee.data.data);
+    } catch (error) {
+        handlePaymentError(error);
+    }
+};
+
+const handleRentPayment = async () => {
+    try {
+        const fee = await api.post('fee/createRentFee', {
+            house_number: rentBills.value.house_number,
+            amount: rentBills.value.monthly_rent,
+            house_monthly_bill_id: recentBills.value.id,
+            user_id: userInfo.value.id
+        });
+        
+        if (fee.data.code !== 0) {
+            throw new Error(fee.data.message);
+        }
+        
+        handlePaymentSuccess(fee.data.data);
+    } catch (error) {
+        handlePaymentError(error);
+    }
+};
+
+const handlePowerPayment = async () => {
+    try {
+        const fee = await api.post('fee/createRentFee', {
+            house_number: rentBills.value.house_number,
+            amount: rentBills.value.monthly_rent,
+            house_monthly_bill_id: recentBills.value.id,
+            user_id: userInfo.value.id
+        });
+        
+        if (fee.data.code !== 0) {
+            throw new Error(fee.data.message);
+        }
+        
+        handlePaymentSuccess(fee.data.data);
+    } catch (error) {
+        handlePaymentError(error);
+    }
+};
+
+const handlePropertyPayment = async () => {
+    try {
+        const fee = await api.post('fee/createRentFee', {
+            house_number: rentBills.value.house_number,
+            amount: rentBills.value.monthly_rent,
+            house_monthly_bill_id: recentBills.value.id,
+            user_id: userInfo.value.id
+        });
+        
+        if (fee.data.code !== 0) {
+            throw new Error(fee.data.message);
+        }
+        
+        handlePaymentSuccess(fee.data.data);
+    } catch (error) {
+        handlePaymentError(error);
+    }
+};
+
+// 支付处理器映射
+const paymentHandlers = {
+    water: handleWaterPayment,
+    power: handlePowerPayment,
+    property: handlePropertyPayment, 
+    rent: handleRentPayment
+};
+
+// 主支付处理函数
 const handlePayment = async () => {
-    loading.value = true
-    switch (paymentForm.value.paymentType) {
-        case 'water':
-            try {
-                const fee = await api.post('fee/createWaterFee', {
-                    house_number: house.value.house_number,
-                    amount: paymentForm.value.amount,
-                    user_id: userInfo.value.id
-                })
-                if (fee.data.code != 0) {
-                    ElMessage.error('订单创建失败' + fee.data.message)
-                    loading.value = false
-                    return
-                }
-                loading.value = false
-                ElMessage.success('预定成功，正在跳转支付宝支付页面，请及时支付！')
-
-                const formHtml = fee.data.data;
-
-                const formElement = document.createElement('div');
-                formElement.innerHTML = formHtml;
-                document.body.appendChild(formElement);
-
-                nextTick(() => {
-                    const form = formElement.querySelector('form');
-                    if (form) {
-                        form.submit();
-                    } else {
-                        console.error('没有找到表单元素');
-                    }
-                });
-            } catch (error) {
-                ElMessage.error('出错了！' + error)
-            }
-            break;
-        case 'power':
-            break;
-        case 'property':
-            break;
+    loading.value = true;
+    
+    const handler = paymentHandlers[paymentForm.value.paymentType];
+    if (handler) {
+        await handler();
+    } else {
+        loading.value = false;
+        ElMessage.error('不支持的支付类型');
     }
 }
+
 const closeDrawer = () => {
     drawerVisible.value = false
     paymentForm.value = {}
@@ -516,50 +609,79 @@ const submitRepair = async () => {
     }
 };
 
+//获取用户信息
+const fetchUserInfo = async () => {
+    token.value = localStorage.getItem('token');
+    if (token.value === null) {
+        router.push('/')
+        ElMessage.error('您还未登录！');
+    }
+    const user = await api.post('user/getUserInfo');
+    if (user.data.code !== 0) {
+        router.push('/login');
+        ElMessage.error('token过期请重新登录！');
+    }
+    userInfo.value = user.data.data;
+}
+
+//获取用户房屋信息
+const fetchHouseInfo = async () => {
+    const waitingOrder = await api.post('house/getByOwnerId');
+    if (waitingOrder.data.data != null) {
+        house.value = waitingOrder.data.data
+        showcard.value = 'waiting';
+    }
+}
+
+//获取用户合同
+const fetchContarctInfo = async () => {
+    const leaseContract = await api.post('leaseContract/getActiveLeaseContractByUserId', {
+        user_id: userInfo.value.id
+    });
+    if (leaseContract.data.data != null) {
+        showcard.value = 'occupied';
+        fetchRepairInfo();
+        fetchRentBill();
+    }
+}
+
+//获取报修记录
+const fetchRepairInfo = async () => {
+    const repairList = await api.get(`repair/selectRepairByHouseId?house_id=${house.value.id}`)
+    repairProgress.value = repairList.data.data
+}
+
+//获取房屋每月账单
+const fetchRentBill = async () => {
+    const rentBillList = await api.post(`houseMonthlyBill/getPayingHouseMonthlyRentBillByHouseId?house_id=${house.value.id}`)
+    rentBills.value = rentBillList.data.data
+}
+
+//获取订单信息
+const fetchFeeInfo = async () => {
+    const FeeList = await api.post('fee/getByUserId');
+    recentBills.value = FeeList.data.data;
+    recentBills.value.forEach(item => {
+        item.created_at = dayjs(item.created_at).format('YYYY-MM-DD HH:mm:ss');
+        item.due_date = dayjs(item.due_date).format('YYYY-MM-DD');
+    });
+}
 
 onMounted(async () => {
     try {
         //获取用户信息
-        token.value = localStorage.getItem('token');
-        if (token.value === null) {
-            router.push('/')
-            ElMessage.error('您还未登录！');
-        }
-        const user = await api.post('user/getUserInfo');
-        if (user.data.code !== 0) {
-            router.push('/login');
-            ElMessage.error('token过期请重新登录！');
-        }
-        userInfo.value = user.data.data;
+        await fetchUserInfo();
 
         //获取用户房屋信息
-        const waitingOrder = await api.post('house/getByOwnerId');
-        if (waitingOrder.data.data != null) {
-            house.value = waitingOrder.data.data
-            showcard.value = 'waiting';
-        }
+        await fetchHouseInfo();
 
         //获取用户合同
-        const leaseContract = await api.post('leaseContract/getActiveLeaseContractByUserId', {
-            user_id: userInfo.value.id
-        });
-        if (leaseContract.data.data != null) {
-            showcard.value = 'occupied';
-
-            //获取报修记录
-            const repairList = await api.get(`repair/selectRepairByHouseId?house_id=${house.value.id}`)
-            repairProgress.value = repairList.data.data
-        }
+        await fetchContarctInfo();
 
         //获取订单信息
-        const FeeList = await api.post('fee/getByUserId');
-        recentBills.value = FeeList.data.data;
-        recentBills.value.forEach(item => {
-            item.created_at = dayjs(item.created_at).format('YYYY-MM-DD HH:mm:ss');
-            item.due_date = dayjs(item.due_date).format('YYYY-MM-DD');
-        });
+        await fetchFeeInfo();
 
-
+        await goToNotice()
     } catch (error) {
         console.error('请求出错:', error);
     } finally {
