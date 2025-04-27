@@ -1,20 +1,5 @@
 <template>
   <div class="contract-management">
-    <!-- 操作工具栏 -->
-    <el-card shadow="never" class="operation-bar">
-      <div class="toolbar">
-        <div class="search-area">
-          <el-input v-model="searchKey" placeholder="搜索合同编号/租户/房屋" clearable @input="handleSearch" class="search-input">
-            <template #prefix>
-              <el-icon>
-                <Search />
-              </el-icon>
-            </template>
-          </el-input>
-        </div>
-      </div>
-    </el-card>
-
     <!-- 数据展示区 -->
     <el-card shadow="never" class="data-card">
       <el-table v-loading="loading" :data="contracts" style="width: 100%" :header-cell-style="headerStyle"
@@ -96,9 +81,6 @@
 
         <el-table-column label="操作" fixed="right" width="180">
           <template #default="{ row }">
-            <el-button link type="primary" @click.stop="handleEdit(row)">
-              编辑
-            </el-button>
             <el-button link type="danger" @click.stop="handleTerminate(row)" v-if="row.contract_status === 'active'">
               终止
             </el-button>
@@ -195,6 +177,10 @@ const fetchHouseInfo = async () => {
 
 //获取用户数据
 const fetchUserInfo = async () => {
+      if (userIds.value.length === 0) {
+      userInfo.value = []
+      return
+    }
   try {
     const res = await api.post('user/getUserByIds' , userIds.value)
     if (res.data.code !== 0) {
@@ -218,11 +204,23 @@ const handlePageChange = (val) => {
   fetchContracts()
 }
 
-// 搜索处理
-const handleSearch = () => {
-  queryParams.search = searchKey.value
-  queryParams.page = 1
-  fetchContracts()
+// 终止合同
+const handleTerminate = async (row) => {
+  try {
+    const res = await api.post('leaseContract/terminateLeaseContract', {
+      id: row.id,
+      house_id: row.house_id,
+      house_number: row.house_number,
+      user_id: row.user_id
+    })
+    if (res.data.code !== 0) {
+      ElMessage.error('获取房屋信息失败: ' + res.data.message)
+      return
+    }
+    houseInfo.value = res.data.data
+  } catch (error) {
+    ElMessage.error('获取房屋信息失败222')
+  }
 }
 
 const userMap = computed(() => {
