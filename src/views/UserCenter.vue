@@ -151,8 +151,8 @@
                         </div>
                     </template>
                     <el-timeline>
-                        <el-timeline-item v-for="(item, index) in repairProgress" :key="index"
-                            :timestamp="item.created_at" placement="top">
+                        <el-timeline-item v-for="(item, index) in repairProgress" :key="index" :timestamp="item.created_at"
+                            placement="top">
                             <el-card shadow="hover">
                                 <h4>{{ item.description }}</h4>
                                 <el-tag :type="statusTypeMap[item.status]">
@@ -167,8 +167,7 @@
     </div>
     <!-- 缴费抽屉 -->
     <el-drawer title="缴费管理" size="400px" v-model="drawerVisible" :before-close="handleClose" class="payment-drawer">
-        <el-form :model="paymentForm" ref="paymentFormRef" label-position="top" label-width="120px"
-            class="payment-form">
+        <el-form :model="paymentForm" ref="paymentFormRef" label-position="top" label-width="120px" class="payment-form">
             <!-- 缴费类型 -->
             <el-form-item label="缴费类型" prop="paymentType"
                 :rules="[{ required: true, message: '请选择缴费类型', trigger: 'change' }]">
@@ -186,8 +185,7 @@
                 { required: true, message: '请输入金额', trigger: 'blur' },
                 { pattern: /^\d+(\.\d{1,2})?$/, message: '请输入有效金额格式', trigger: 'blur' }
             ]">
-                <el-input v-model="paymentForm.amount" placeholder="0.00" type="number" step="0.01"
-                    class="amount-input">
+                <el-input v-model="paymentForm.amount" placeholder="0.00" type="number" step="0.01" class="amount-input">
                     <template #prefix>¥</template>
                 </el-input>
             </el-form-item>
@@ -196,8 +194,8 @@
             <el-form-item v-if="paymentForm.paymentType === 'rent'" label="选择房租账单" prop="selectedRentBill"
                 :rules="[{ required: true, message: '请选择房租账单', trigger: 'change' }]">
                 <el-select v-model="paymentForm.selectedRentBill" placeholder="请选择房租账单" class="full-width-select">
-                    <el-option v-for="bill in rentBills" :key="bill.id" :label="`${bill.bill_start_date} - ${bill.bill_end_date}期账单`"
-                        :value="bill.id" />
+                    <el-option v-for="bill in rentBills" :key="bill.id"
+                        :label="`${bill.bill_start_date} - ${bill.bill_end_date}期账单`" :value="bill.id" />
                 </el-select>
             </el-form-item>
 
@@ -279,6 +277,8 @@ import { House, Money, Bell, Tools, Document, Clock, Memo, Plus } from '@element
 
 const token = ref('')
 const userInfo = ref({})
+
+const rentBills = ref([])
 const paymentForm = ref({})
 const announcements = ref({});
 const showUpload = ref(false)
@@ -299,7 +299,6 @@ const drawerVisible = ref(false)
 const dialogAnnounceMentVisible = ref(false);
 const dialogRepairVisible = ref(false);
 
-const rentBills = ref([])
 const recentBills = ref([])
 const contractData = ref([])
 const houseData = ref([])
@@ -460,36 +459,49 @@ const handleWaterPayment = async () => {
             amount: paymentForm.value.amount,
             user_id: userInfo.value.id
         });
-        
+
         if (fee.data.code !== 0) {
             throw new Error(fee.data.message);
         }
-        
+
         handlePaymentSuccess(fee.data.data);
     } catch (error) {
         handlePaymentError(error);
     }
 };
 
+//缴纳房租账单
 const handleRentPayment = async () => {
+    console.log('房租账单是:', paymentForm.value.selectedRentBill);
+
+    const selectedBill = rentBills.value.find(
+        item => item.id === paymentForm.value.selectedRentBill
+    );
+
+    if (!selectedBill) {
+        ElMessage.error('请选择有效的账单');
+        return;
+    }
+
     try {
         const fee = await api.post('fee/createRentFee', {
-            house_number: rentBills.value.house_number,
-            amount: rentBills.value.monthly_rent,
-            house_monthly_bill_id: recentBills.value.id,
-            user_id: userInfo.value.id
+            house_number: selectedBill.house_number,  // 注意：selectedBill 是普通对象，不需要 .value
+            amount: selectedBill.monthly_rent,       // 同上
+            house_monthly_bill_id: selectedBill.id,   // 建议使用选中账单的ID
+            user_id: userInfo.value.id               // userInfo 是 ref，需要 .value
         });
-        
+
         if (fee.data.code !== 0) {
             throw new Error(fee.data.message);
         }
-        
+
         handlePaymentSuccess(fee.data.data);
     } catch (error) {
         handlePaymentError(error);
     }
 };
 
+//缴纳电费
 const handlePowerPayment = async () => {
     try {
         const fee = await api.post('fee/createRentFee', {
@@ -498,17 +510,18 @@ const handlePowerPayment = async () => {
             house_monthly_bill_id: recentBills.value.id,
             user_id: userInfo.value.id
         });
-        
+
         if (fee.data.code !== 0) {
             throw new Error(fee.data.message);
         }
-        
+
         handlePaymentSuccess(fee.data.data);
     } catch (error) {
         handlePaymentError(error);
     }
 };
 
+//缴纳物业费
 const handlePropertyPayment = async () => {
     try {
         const fee = await api.post('fee/createRentFee', {
@@ -517,11 +530,11 @@ const handlePropertyPayment = async () => {
             house_monthly_bill_id: recentBills.value.id,
             user_id: userInfo.value.id
         });
-        
+
         if (fee.data.code !== 0) {
             throw new Error(fee.data.message);
         }
-        
+
         handlePaymentSuccess(fee.data.data);
     } catch (error) {
         handlePaymentError(error);
@@ -532,14 +545,14 @@ const handlePropertyPayment = async () => {
 const paymentHandlers = {
     water: handleWaterPayment,
     power: handlePowerPayment,
-    property: handlePropertyPayment, 
+    property: handlePropertyPayment,
     rent: handleRentPayment
 };
 
 // 主支付处理函数
 const handlePayment = async () => {
     loading.value = true;
-    
+
     const handler = paymentHandlers[paymentForm.value.paymentType];
     if (handler) {
         await handler();
@@ -758,7 +771,7 @@ onMounted(async () => {
             color: white;
         }
 
-        ::v-deep .el-upload {
+        :deep .el-upload {
             display: block;
             position: absolute;
             width: 100%;
@@ -769,7 +782,7 @@ onMounted(async () => {
             cursor: pointer;
         }
 
-        ::v-deep .el-upload:hover {
+        :deep .el-upload:hover {
             opacity: 1;
         }
 
@@ -797,7 +810,7 @@ onMounted(async () => {
             color: white;
         }
 
-        ::v-deep .el-upload {
+        :deep .el-upload {
             display: block;
             position: absolute;
             width: 100%;
@@ -808,7 +821,7 @@ onMounted(async () => {
             cursor: pointer;
         }
 
-        ::v-deep .el-upload:hover {
+        :deep .el-upload:hover {
             opacity: 1;
         }
 
