@@ -18,6 +18,7 @@ public class Fee {
     private String house_number;
     private int user_id;
     private String type;
+    private int house_monthly_bill_id;
     private BigDecimal amount;
     private Date due_date;
     private boolean paid;

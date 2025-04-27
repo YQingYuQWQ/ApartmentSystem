@@ -15,10 +15,12 @@ public interface HouseService {
     void updateWaterFeeByHouseNumber(String house_number, BigDecimal water_fee);
     void updatePowerFeeByHouseNumber(String house_number, BigDecimal power_fee);
     void updateHouseInfoByHouseNumber(House house);
+    void setOwnerNullByHouseNumber(String house_number);
     House getHouseByHouseNumber(String house_number);
     House getHouseById(int id);
     House getHouseByOwnerId(int owner_id);
     String getStatusByHouseNumber(String house_number);
     List<House> showHouseList();
     List<House> getHouseList();
+    List<House> getHousesByIds(List<Integer> ids);
 }

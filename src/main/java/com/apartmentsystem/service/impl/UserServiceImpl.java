@@ -36,6 +36,14 @@ public class UserServiceImpl implements UserService {
         return userMapper.getUserByUserName(userName);
     }
 
+    @Override
+    public User getUserById(int id) {
+        User user = userMapper.getUserById(id);
+        if (user == null)
+            throw new RuntimeException("用户不存在");
+        return user;
+    }
+
     /*
         * 注册用户
         * @param username 用户名
@@ -130,6 +138,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> getByIds(List<Integer> ids) {
+        if(UserHolder.getUser().getRole() != 0)
+            throw new RuntimeException("权限不足");
+        return userMapper.getByIds(ids);
+    }
+
+    @Override
     public void updateUserById(User user) {
         if(UserHolder.getUser().getRole() != 0)
             throw new RuntimeException("权限不足");
@@ -153,6 +168,12 @@ public class UserServiceImpl implements UserService {
     public void createUserById(User user) {
         if(UserHolder.getUser().getRole() != 0)
             throw new RuntimeException("权限不足");
+        if(userMapper.getUserByUserName(user.getUsername()) != null)
+            throw new RuntimeException("用户名已存在");
+        if(userMapper.getUserByEmail(user.getEmail()) != null)
+            throw new RuntimeException("邮箱已存在");
+        if(userMapper.getUserByPhone(user.getPhone()) != null)
+            throw new RuntimeException("手机号已存在");
         user.setPassword(PasswordUtil.encryptPassword(user.getPassword()));
         userMapper.createUser(user);
     }

@@ -10,6 +10,7 @@ import java.util.List;
 public interface LeaseContractMapper {
     void insertLeaseContract(LeaseContract leaseContract);
     void updateLeaseContractByUserId(LeaseContract leaseContract);
+    void updateStatusById(LeaseContract leaseContract);
     void deleteLeaseContractById(LeaseContract leaseContract);
     LeaseContract selectLeaseContractByUserName(String user_name);
     List<LeaseContract> selectAllLeaseContract();

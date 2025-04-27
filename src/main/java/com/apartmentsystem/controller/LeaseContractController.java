@@ -42,4 +42,10 @@ public class LeaseContractController {
     public Result getAllLeaseContract() {
         return Result.success(leaseContractServiceImpl.selectAllLeaseContract());
     }
+
+    @PostMapping("/terminateLeaseContract")
+    public Result terminateLeaseContract(@RequestBody LeaseContract leaseContract) {
+        leaseContractServiceImpl.terminateLeaseContract(leaseContract);
+        return Result.success();
+    }
 }

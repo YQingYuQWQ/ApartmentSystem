@@ -22,6 +22,8 @@ public interface HouseMapper {
     void updateWaterFeeByHouseNumber(@Param("house_number") String house_number, @Param("water_fee") BigDecimal water_fee);
     void updatePowerFeeByHouseNumber(@Param("house_number") String house_number, @Param("power_fee") BigDecimal power_fee);
     void updateHouseInfoByHouseNumber(House house);
+    void setOwnerNullByHouseNumber(@Param("house_number") String house_number);
     List<House> getHouseList();
     List<House> showHouseList();
+    List<House> getHousesByIds(List<Integer> ids);
 }

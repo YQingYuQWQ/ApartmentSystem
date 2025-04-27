@@ -11,4 +11,5 @@ public interface LeaseContractService {
     LeaseContract selectLeaseContractByUserName(LeaseContract leaseContract);
     List<LeaseContract> selectAllLeaseContract();
     LeaseContract selectActiveLeaseContractByUserId(int user_id);
+    void terminateLeaseContract(LeaseContract leaseContract);
 }

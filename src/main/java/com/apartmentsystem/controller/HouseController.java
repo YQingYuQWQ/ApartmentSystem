@@ -8,6 +8,8 @@ import com.apartmentsystem.util.UserHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @CrossOrigin
@@ -42,7 +44,7 @@ public class HouseController {
         return Result.success();
     }
 
-    @PostMapping("/delete")
+    @PostMapping("/deleteByHouseNumber")
     public Result deleteHouseByHouseNumber(@RequestParam String house_number) {
         houseServiceImpl.deleteHouseByHouseNumber(house_number);
         return Result.success();
@@ -56,6 +58,11 @@ public class HouseController {
     @GetMapping("/getById")
     public Result getHouseById(@RequestParam int id) {
         return Result.success(houseServiceImpl.getHouseById(id));
+    }
+
+    @PostMapping("/getByIds")
+    public Result getHousesByIds(@RequestBody List<Integer> house_ids) {
+        return Result.success(houseServiceImpl.getHousesByIds(house_ids));
     }
 
     @GetMapping("/showList")
@@ -72,5 +79,7 @@ public class HouseController {
     public Result getHouseList() {
         return Result.success(houseServiceImpl.getHouseList());
     }
+
+
 
 }

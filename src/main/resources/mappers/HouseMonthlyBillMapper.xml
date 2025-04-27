@@ -7,4 +7,14 @@
         INSERT INTO house_monthly_bill (bill_month, bill_start_date, bill_end_date, house_id, house_number, monthly_rent, rent_status, monthly_property_fee, property_fee_status, created_at, updated_at)
         VALUES (#{bill_month}, #{bill_start_date}, #{bill_end_date}, #{house_id}, #{house_number}, #{monthly_rent}, #{rent_status}, #{monthly_property_fee}, #{property_fee_status}, NOW(), NOW())
     </insert>
+    <update id="updateRent_statusById">
+        UPDATE house_monthly_bill
+        SET rent_status = #{rent_status}, updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+    <select id="getPayingHouseMonthlyRentBillByHouseId"
+            resultType="com.apartmentsystem.entity.HouseMonthlyBill">
+        SELECT * FROM house_monthly_bill where
+        house_id = #{house_id} and rent_status = 0;
+    </select>
 </mapper>

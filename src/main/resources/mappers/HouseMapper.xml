@@ -50,6 +50,9 @@
     <update id="updateHouseInfoByHouseNumber">
         UPDATE house SET building_name = #{building_name}, floor = #{floor}, owner_id = #{owner_id}, status = #{status}, price = #{price}, deposit = #{deposit}, area = #{area}, images = #{images}, images_info = #{images_info}, water_fee = #{water_fee}, power_fee = #{power_fee}, updated_at = NOW() WHERE house_number = #{house_number}
     </update>
+    <update id="setOwnerNullByHouseNumber">
+        UPDATE house SET owner_id = NULL, updated_at = NOW() WHERE house_number = #{house_number}
+    </update>
     <delete id="deleteHouseByHouseNumber">
         DELETE FROM house WHERE house_number = #{house_number}
     </delete>
@@ -70,6 +73,12 @@
     </select>
     <select id="getHouseByOwnerId" resultType="com.apartmentsystem.entity.House">
         SELECT * FROM house WHERE owner_id = #{owner_id}
+    </select>
+    <select id="getHousesByIds" resultType="com.apartmentsystem.entity.House">
+        SELECT * FROM house WHERE id IN
+        <foreach item="id" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </select>
 
 </mapper>

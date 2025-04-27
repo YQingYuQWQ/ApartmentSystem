@@ -1,8 +1,10 @@
 package com.apartmentsystem.service.impl;
 
 import com.apartmentsystem.entity.Fee;
+import com.apartmentsystem.entity.HouseMonthlyBill;
 import com.apartmentsystem.service.AlipayService;
 import com.apartmentsystem.util.AlipayUtil;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,8 @@ public class AlipayServiceImpl implements AlipayService {
     private FeeServiceImpl feeServiceImpl;
     @Autowired
     private HouseServiceImpl houseServiceImpl;
+    @Autowired
+    private HouseMonthlyBillServiceImpl houseMonthlyBillServiceImpl;
 
     /**
      * 处理支付宝回调
@@ -30,8 +34,6 @@ public class AlipayServiceImpl implements AlipayService {
             throw new RuntimeException("支付宝回调验签失败！");
         }
 
-        System.out.println("支付宝回调验签成功！");
-
 //        String outTradeNo = params.get("out_trade_no"); // 订单号
 //        String tradeNo = params.get("trade_no"); // 支付宝交易号
         String tradeStatus = params.get("trade_status"); // 交易状态
@@ -39,11 +41,8 @@ public class AlipayServiceImpl implements AlipayService {
             throw new RuntimeException("支付宝回调交易状态不是TRADE_SUCCESS！");
 
         String fee_number = params.get("body");
-        System.out.println("支付宝回调成功！订单号：" + fee_number);
-        Fee fee = new Fee();
-        fee.setType(feeServiceImpl.getTypeByFeeNumber(fee_number).getType());
-        fee.setUser_id(feeServiceImpl.getUserIdByFeeNumber(fee_number).getUser_id());
-        fee.setHouse_number(feeServiceImpl.getHouseNumberByFeeNumber(fee_number).getHouse_number());
+        Fee fee = feeServiceImpl.getFeeByFeeNumber(fee_number);
+
         switch (fee.getType()) {
             case "deposit":
                 houseServiceImpl.updateOwnerByHouseNumber(fee.getHouse_number(), fee.getUser_id());
@@ -66,7 +65,9 @@ public class AlipayServiceImpl implements AlipayService {
                 feeServiceImpl.updateFeePaidByFeeNumber(fee_number, true);
                 break;
             case "rent":
+                System.out.println("房租月账单id" + fee.getHouse_monthly_bill_id());
                 feeServiceImpl.updateFeePaidByFeeNumber(fee_number, true);
+                houseMonthlyBillServiceImpl.updateRent_statusById(fee.getHouse_monthly_bill_id(), 1);
                 break;
         }
     }

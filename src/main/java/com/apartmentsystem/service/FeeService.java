@@ -20,8 +20,9 @@ public interface FeeService {
     List<Fee> getFeeByHouseNumber(String house_number);
     List<Fee> getFeeByUserId(int user_id);
     List<Fee> getAllFee();
-    Fee getFeeById(int id);
     String createAliPayOrderForm(Fee fee) throws AlipayApiException;
+    Fee getFeeById(int id);
+    Fee getFeeByFeeNumber(String fee_number);
     Fee getUserIdByFeeNumber(String fee_number);
     Fee getTypeByFeeNumber(String fee_number);
     Fee getHouseNumberByFeeNumber(String fee_number);

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -59,8 +60,10 @@ public class HouseServiceImpl implements HouseService {
 
     @Override
     public void deleteHouseByHouseNumber(String house_number) {
+        if(1 == UserHolder.getUser().getRole())
+            throw new RuntimeException("权限不足");
         House house = houseMapper.getHouseByHouseNumber(house_number);
-        if(house==null)
+        if(house == null)
             throw new RuntimeException("房屋不存在");
         logServiceImpl.insertLog(UserHolder.getUser().getId(), "delete house" + "house_number: "+house_number);
         houseMapper.deleteHouseByHouseNumber(house_number);
@@ -96,6 +99,15 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
+    public void setOwnerNullByHouseNumber(String house_number) {
+        House house = houseMapper.getHouseByHouseNumber(house_number);
+        if(house==null)
+            throw new RuntimeException("房屋不存在");
+        logServiceImpl.insertLog(UserHolder.getUser().getId(), "set house status null" + "house_number: "+house_number);
+        houseMapper.setOwnerNullByHouseNumber(house_number);
+    }
+
+    @Override
     public House getHouseByHouseNumber(String house_number) {
         return houseMapper.getHouseByHouseNumber(house_number);
     }
@@ -104,6 +116,8 @@ public class HouseServiceImpl implements HouseService {
     public House getHouseById(int id) {
         return houseMapper.getHouseById(id);
     }
+
+
 
     @Override
     public House getHouseByOwnerId(int owner_id) {
@@ -125,5 +139,13 @@ public class HouseServiceImpl implements HouseService {
         if (1 == UserHolder.getUser().getRole())
             throw new RuntimeException("权限不足");
         return houseMapper.getHouseList();
+    }
+
+    @Override
+    public List<House> getHousesByIds(List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return Collections.emptyList(); // 空参数直接返回空列表
+        }
+        return houseMapper.getHousesByIds(ids);
     }
 }

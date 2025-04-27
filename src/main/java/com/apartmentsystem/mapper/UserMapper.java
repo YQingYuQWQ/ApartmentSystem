@@ -13,6 +13,7 @@ public interface UserMapper extends BaseMapper<User> {
     User getUserByUserName(@Param("username") String username);
     User getUserByEmail(@Param("email") String email);
     User getUserByPhone(@Param("phone") String phone);
+    User getUserById(@Param("id") int id);
     User getUserAllByUserName(@Param("username") String username);
     //根据id更新用户密码
     Boolean updateUserPasswordById(@Param("id") int id, @Param("password") String password);
@@ -20,6 +21,7 @@ public interface UserMapper extends BaseMapper<User> {
     Boolean insertUser(@Param("username") String username, @Param("password") String password, @Param("email") String email, @Param("phone") String phone, @Param("role") int role);
     Boolean insertNormalUser(User user);
     List<User> getAllUser();
+    List<User> getByIds(List<Integer> ids);
     void updateUserById(User user);
     void createUser(User user);
     void deleteUserById(int id);

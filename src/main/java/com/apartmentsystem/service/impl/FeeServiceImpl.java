@@ -175,6 +175,11 @@ public class FeeServiceImpl implements FeeService{
     }
 
     @Override
+    public Fee getFeeByFeeNumber(String fee_number) {
+        return feeMapper.getFeeByFeeNumber(fee_number);
+    }
+
+    @Override
     public String createAliPayOrderForm(Fee fee) throws AlipayApiException {
         AlipayClient alipayClient = new DefaultAlipayClient(alipayConfig);
         AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();

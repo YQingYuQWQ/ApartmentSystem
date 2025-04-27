@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/user")
@@ -46,6 +48,16 @@ public class UserController {
     public Result createUser(@RequestBody User user) {
         userServiceImpl.createUserById(user);
         return Result.success();
+    }
+
+    @PostMapping("/getUserById")
+    public Result getUserById(@RequestParam int id) {
+        return Result.success(userServiceImpl.getUserById(id));
+    }
+
+    @PostMapping("/getUserByIds")
+    public Result getUserByIds(@RequestBody List<Integer> user_ids) {
+        return Result.success(userServiceImpl.getByIds(user_ids));
     }
 
     @PostMapping("/deleteUser")

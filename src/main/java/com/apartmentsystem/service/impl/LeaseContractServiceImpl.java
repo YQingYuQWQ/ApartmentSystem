@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -48,12 +49,24 @@ public class LeaseContractServiceImpl implements LeaseContractService {
         houseMonthlyBill.setRent_status(false);
         houseMonthlyBill.setMonthly_property_fee(BigDecimal.valueOf(0));
         houseMonthlyBill.setProperty_fee_status(false);
+
+        LocalDate startDate = leaseContract.getStart_date().toLocalDate();
+        LocalDate endDate = leaseContract.getEnd_date().toLocalDate();
+
         for(int i = 1; i <= leaseContractMapper.selectActiveLeaseContractByUserId(leaseContract.getUser_id()).getCount_month(); i++) {
-            houseMonthlyBill.setBill_month(i);
-            houseMonthlyBill.setBill_start_date(leaseContract.getStart_date());
-            houseMonthlyBill.setBill_end_date(leaseContract.getEnd_date());
-            houseMonthlyBill.setCreated_at(Date.valueOf(LocalDateTime.now().toLocalDate()));
-            houseMonthlyBill.setUpdated_at(Date.valueOf(LocalDateTime.now().toLocalDate()));
+            LocalDate billStart = startDate.plusMonths(i);
+            LocalDate billEnd = startDate.plusMonths(i + 1);
+
+            // 若 billEnd 超过合同结束时间，则设置为合同结束时间
+            if (billEnd.isAfter(endDate)) {
+                billEnd = endDate;
+            }
+
+            houseMonthlyBill.setBill_month(i + 1);
+            houseMonthlyBill.setBill_start_date(Date.valueOf(billStart));
+            houseMonthlyBill.setBill_end_date(Date.valueOf(billEnd));
+            houseMonthlyBill.setCreated_at(Date.valueOf(LocalDate.now()));
+            houseMonthlyBill.setUpdated_at(Date.valueOf(LocalDate.now()));
             houseMonthBillServiceImpl.insertHouseMonthBill(houseMonthlyBill);
         }
         return leaseContract.getId();
@@ -77,5 +90,20 @@ public class LeaseContractServiceImpl implements LeaseContractService {
     @Override
     public LeaseContract selectActiveLeaseContractByUserId(int user_id) {
         return leaseContractMapper.selectActiveLeaseContractByUserId(user_id);
+    }
+
+    @Override
+    public void terminateLeaseContract(LeaseContract leaseContract) {
+        if(1 == UserHolder.getUser().getRole())
+            throw new RuntimeException("权限不足");
+        if(!"occupied".equals(houseServiceImpl.getHouseById(leaseContract.getHouse_id()).getStatus()))
+            throw new RuntimeException("房屋不处于已入住状态");
+
+        leaseContract.setContract_status("terminated");
+        leaseContractMapper.updateStatusById(leaseContract);
+        houseServiceImpl.setOwnerNullByHouseNumber(leaseContract.getHouse_number());
+        houseServiceImpl.updateStatusByHouseId(leaseContract.getHouse_id(), "vacant");
+
+        logServiceImpl.insertLog(UserHolder.getUser().getId(), "终止合同" + leaseContract.getUser_id());
     }
 }
