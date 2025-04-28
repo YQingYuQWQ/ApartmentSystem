@@ -36,13 +36,13 @@
         UPDATE house SET status = #{status}, updated_at = NOW() WHERE house_number = #{house_number}
     </update>
     <update id="updateWaterFeeByHouseNumber">
-        UPDATE house SET water_fee = #{water_fee}, updated_at = NOW() WHERE house_number = #{house_number}
+        UPDATE house SET water_fee = water_fee + #{water_fee}, updated_at = NOW() WHERE house_number = #{house_number}
     </update>
     <update id="updateElectricityFeeByHouseNumber">
         UPDATE house SET electricity_fee = #{electricity_fee}, updated_at = NOW() WHERE house_number = #{house_number}
     </update>
     <update id="updatePowerFeeByHouseNumber">
-        UPDATE house SET power_fee = #{power_fee}, updated_at = NOW() WHERE house_number = #{house_number}
+        UPDATE house SET power_fee = power_fee + #{power_fee}, updated_at = NOW() WHERE house_number = #{house_number}
     </update>
     <update id="updateStatusByHouseId">
         UPDATE house SET status = #{status}, updated_at = NOW() WHERE id = #{id}

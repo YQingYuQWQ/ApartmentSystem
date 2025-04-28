@@ -137,11 +137,11 @@ public class FeeServiceImpl implements FeeService{
                 houseServiceImpl.updateStatusByHouseNumber(feeMapper.getFeeByFeeNumber(fee_number).getHouse_number(), "waiting");
                 break;
             case "rent":
-                break;
             case "water":
             case "power":
             case "utilities":
             case "maintenance":
+                break;
             default:
                 throw new RuntimeException("费用类型错误");
         }

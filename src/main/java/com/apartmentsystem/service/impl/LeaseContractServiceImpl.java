@@ -53,7 +53,7 @@ public class LeaseContractServiceImpl implements LeaseContractService {
         LocalDate startDate = leaseContract.getStart_date().toLocalDate();
         LocalDate endDate = leaseContract.getEnd_date().toLocalDate();
 
-        for(int i = 1; i <= leaseContractMapper.selectActiveLeaseContractByUserId(leaseContract.getUser_id()).getCount_month(); i++) {
+        for(int i = 0; i < leaseContractMapper.selectActiveLeaseContractByUserId(leaseContract.getUser_id()).getCount_month(); i++) {
             LocalDate billStart = startDate.plusMonths(i);
             LocalDate billEnd = startDate.plusMonths(i + 1);
 

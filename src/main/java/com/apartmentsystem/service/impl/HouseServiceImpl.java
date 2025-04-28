@@ -74,7 +74,7 @@ public class HouseServiceImpl implements HouseService {
         House house = houseMapper.getHouseByHouseNumber(house_number);
         if(house==null)
             throw new RuntimeException("房屋不存在");
-        logServiceImpl.insertLog(UserHolder.getUser().getId(), "update house water fee" + "house_number: "+house_number+" water_fee: "+water_fee);
+        //logServiceImpl.insertLog(UserHolder.getUser().getId(), "update house water fee" + "house_number: "+house_number+" water_fee: "+water_fee);
         houseMapper.updateWaterFeeByHouseNumber(house_number, water_fee);
     }
 

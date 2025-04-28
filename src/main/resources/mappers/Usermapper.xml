@@ -6,7 +6,7 @@
         INSERT INTO users (username, password, email, phone, role, created_at, updated_at) VALUES (#{username}, #{password}, #{email}, #{phone}, #{role}, NOW(), NOW())
     </insert>
     <insert id="insertNormalUser">
-        INSERT INTO users (username, password, email, phone, role, created_at, updated_at, photo, nick_name) VALUES (#{username}, #{password}, #{email}, #{phone}, '1', NOW(), NOW(), "http://ddns.lyzd.fun:52333/i/2025/04/01/ss9g9f.jpeg", #{nick_name})
+        INSERT INTO users (username, password, email, phone, role, created_at, updated_at, photo, nick_name) VALUES (#{username}, #{password}, #{email}, #{phone}, '1', NOW(), NOW(), "https://ei.lyzd.fun/i/2025/04/01/ss9g9f.jpeg", #{nick_name})
     </insert>
     <insert id="createUser">
         INSERT INTO users (username, password, email, phone, role, created_at, updated_at, photo, nick_name) VALUES (#{username}, #{password}, #{email}, #{phone}, #{role}, NOW(), NOW(), #{photo}, #{nick_name})
